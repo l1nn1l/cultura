@@ -1,5 +1,5 @@
-com/cultura/TimelineController.class
-com/cultura/LoginController.class
-com/cultura/SignupController.class
-com/cultura/App.class
+com\cultura\SignupController.class
+com\cultura\LoginController.class
+com\cultura\TimelineController.class
 module-info.class
+com\cultura\App.class
