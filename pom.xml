@@ -20,6 +20,11 @@
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21.0.1</version> 
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -52,12 +57,12 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Main-Class>com.cultura.App</Main-Class>
-                            <Module-Name>com.cultura</Module-Name> 
+                    <!-- <archive>
+                        <manifestEntries> -->
+                            <Main-Class>com.cultura/com.cultura.App</Main-Class>
+                            <!-- <Module-Name>com.cultura</Module-Name> 
                         </manifestEntries>
-                    </archive>
+                    </archive> -->
                 </configuration>
             </plugin>
         </plugins>

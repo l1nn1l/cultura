@@ -2,4 +2,8 @@
 /Users/linn/JavaFxProjects/cultura/src/main/java/module-info.java
 /Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/LoginController.java
 /Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/SignupController.java
+/Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/objects/Account.java
+/Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/objects/Post.java
+/Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/PostController.java
 /Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/App.java
+/Users/linn/JavaFxProjects/cultura/src/main/java/com/cultura/objects/Reactions.java

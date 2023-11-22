@@ -1,0 +1,26 @@
+.post-background{
+    -fx-background-color: #ffff;
+    background-color: #ffff;
+    -fx-background-radius: 15;
+    -fx-effect: dropShadow(three-pass-box,rgba(0,0,0,0.1) , 5.0, 0.0, 0.0, 5.0);
+}
+
+.reactions-container{
+     -fx-background-color: #ffff;
+     background-color: #ffff;
+     -fx-background-radius: 50;
+     -fx-border-width: 1;
+     border-width: 1;
+     -fx-border-color:#B8B9BB;
+     border-color: #B8B9BB;
+
+     -fx-border-radius: 50;
+     border-radius: 50;
+}
+
+.top-border{
+    -fx-border-width: 1 0 0 0;
+    border-width: 1 0 0 0;
+    -fx-border-color: #606266;
+    border-color: #606266;
+}
