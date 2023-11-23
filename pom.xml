@@ -79,7 +79,7 @@
                     <archive>
                         <manifestEntries>
                             <Main-Class>com.cultura.App</Main-Class>
-                            <Module-Name>com.cultura</Module-Name> 
+                            <Module-Name>com.cultura</Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

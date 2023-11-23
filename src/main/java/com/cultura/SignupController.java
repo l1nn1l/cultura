@@ -48,6 +48,4 @@ public class SignupController {
             e.printStackTrace();
         }
     }
-
-
 }
