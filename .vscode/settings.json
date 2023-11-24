@@ -1,3 +1,42 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "xprotocol",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "MySQL",
+            "database": "cultura_db",
+            "username": "root",
+            "password": "rawan123",
+            "connectionTimeout": 30
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "cultura",
+            "database": "cultura_db",
+            "username": "root",
+            "password": "rawan123",
+            "connectionTimeout": 50
+        },
+        {
+            "java.project.sourcePaths": ["src"],
+            "java.project.referencedLibraries": [
+                "lib/mysql-connector-j-8.2.0.jar"
+            ]
+        }
+        
+    ]
 }
