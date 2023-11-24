@@ -1,6 +1,8 @@
 package com.cultura.Requests;
 
-public class SignupRequest {
+import java.io.Serializable;
+
+public class SignupRequest implements Serializable {
     public String requestName, username, name, password, email;
 
     public SignupRequest(String username, String name, String password, String email){

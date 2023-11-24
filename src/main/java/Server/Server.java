@@ -27,14 +27,20 @@ public class Server {
                 System.out.println("A new client is connected : " + clientSocket);
 
                 // Receiving input and sending output to Client
-                ObjectInputStream inputFromClient = new ObjectInputStream(clientSocket.getInputStream());
+                InputStream inputStream = clientSocket.getInputStream();
+                OutputStream outputStream = clientSocket.getOutputStream();
+                System.out.println("got the streams all good " + (inputStream == null)
+                + " " + (outputStream == null));
                 ObjectOutputStream outputToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+                ObjectInputStream inputFromClient = new ObjectInputStream(clientSocket.getInputStream());
+                System.out.println("the sockets were created " + (inputFromClient == null) + " ");
 
                 // Create a new Thread object for the Client
                 Thread thread = new ClientHandler(clientSocket, inputFromClient, outputToClient);
                 thread.start();
 
             } catch (Exception e) {
+                System.out.println("this is not workinnnnnnngggggggggg");
                 clientSocket.close();
                 e.printStackTrace();
             }

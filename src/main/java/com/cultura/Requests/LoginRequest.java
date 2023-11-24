@@ -1,6 +1,8 @@
 package com.cultura.Requests;
 
-public class LoginRequest {
+import java.io.Serializable;
+
+public class LoginRequest implements Serializable {
     public String requestName, username, password;
 
     public LoginRequest(String username,String password){

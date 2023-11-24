@@ -25,72 +25,24 @@ public class Client {
             socket = new Socket(ip, 5056);
             System.out.println("client finished running");
             System.out.println(socket == null);
-            inputFromServer = new ObjectInputStream(socket.getInputStream());
-            System.out.println(3);
             outputToServer = new ObjectOutputStream(socket.getOutputStream());
+            inputFromServer = new ObjectInputStream(socket.getInputStream());
+
+            String str = "initialize";
+         //   outputToServer.writeUTF(str);
+
         } catch (Exception e){
                 System.out.println("there was an error");
                 e.printStackTrace();
             }
     }
 
-    public void sendRequest(Object request) throws IOException {
+    public String sendRequest(Object request) throws IOException, ClassNotFoundException {
+        System.out.println("sending the request");
         outputToServer.writeObject(request);
+        System.out.println("sending the request...");
+
+        return (String) inputFromServer.readObject();
     }
 
-    public static void main(String[] args) throws IOException {
-        System.out.println("inside client");
-        try {
-            App.launch();
-            Client client = new Client();
-            System.out.println("this is running!!!");
-
-            // signup
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("signup.fxml"));
-            Parent signupRoot = fxmlLoader.load();
-            SignupController signupController = fxmlLoader.getController();
-            signupController.setClient(client);
-
-            // login
-            fxmlLoader = new FXMLLoader(App.class.getResource("login.fxml"));
-            Parent loginRoot = fxmlLoader.load();
-            LoginController loginController = fxmlLoader.getController();
-            loginController.setClient(client);
-
-            Scanner scan = new Scanner(System.in);
-
-            // This will trigger the accept() function of the Server
-
-            // Receiving input and sending output to Server
-
-
-            while (true) {
-
-                System.out.println("hi");//inputFromServer.readUTF());
-                String tosend = scan.nextLine();
-            //    outputToServer.writeUTF(tosend);
-
-                // Sending Exit closes the connection and breaks the loop
-                if(tosend.equals("Exit"))
-                {
-                    System.out.println("-----------------------------------------------------------------------------------");
-             //       System.out.println("Closing this connection : " + socket);
-               //     socket.close();
-                    System.out.println("Connection closed");
-                    break;
-                }
-                System.out.println("-----------------------------------------------------------------------------------");
-                // Printing message received from Server
-                String received = "hi";//inputFromServer.readUTF();
-                System.out.println(received);
-            }
-
-            // Closing resources
-            scan.close();
-         //   inputFromServer.close();
-          //  outputToServer.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
 }

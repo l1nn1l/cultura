@@ -13,8 +13,8 @@ public class ClientHandler extends Thread {
     // Constructor
     public ClientHandler(Socket clientSocket, ObjectInputStream inputFromClient, ObjectOutputStream outputToClient) {
         this.clientSocket = clientSocket;
-        this.inputFromClient = inputFromClient;
         this.outputToClient = outputToClient;
+        this.inputFromClient = inputFromClient;
     }
 
     @Override
@@ -23,12 +23,10 @@ public class ClientHandler extends Thread {
         Object received;
         Object toreturn;
 
-        while (true) {
+       while (true) {
             try {
-
-                // Receive the answer from Client
                 received = inputFromClient.readObject();
-
+                System.out.println("we got the response");
                 System.out.println("received was " + received);
 
                 if (received instanceof String){
@@ -40,6 +38,9 @@ public class ClientHandler extends Thread {
                         System.out.println("Connection closed");
                         break;
                     }
+                    else {
+                        System.out.println("client says " + received);
+                    }
                 }
                 else if (received instanceof SignupRequest){
                     System.out.println("Client " + this.clientSocket + " is signing up");
@@ -48,24 +49,37 @@ public class ClientHandler extends Thread {
                     String username = signupRequest.username;
                     String password = signupRequest.password;
                     String email = signupRequest.email;
-                    UserFunctions.signupUser(username, password, name, email);
-                    outputToClient.writeUTF("Signup successful");
+                    boolean worked = UserFunctions.signupUser(username, password, name, email);
+                    if (worked) {
+                        outputToClient.writeObject("Signup successful");
+                    } else {
+                        outputToClient.writeObject("Signup failed");
+                    }
+
+
                 }
                 else if (received instanceof LoginRequest) {
                     System.out.println("Client " + this.clientSocket + " is logging in");
                     LoginRequest loginRequest = (LoginRequest) received;
                     String username = loginRequest.username;
                     String password = loginRequest.password;
-                    UserFunctions.loginUser(username, password);
-                    outputToClient.writeUTF("Login successful");
-                    break;
+                    boolean worked = UserFunctions.loginUser(username, password);
+                    if (worked) {
+                        outputToClient.writeObject("Login successful");
+                    } else {
+                        outputToClient.writeObject("Login failed");
+                    }
                 }
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                try {
+                    outputToClient.writeObject("Request failed. Please try again.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
         try {
-            // Closing resources
+           // Closing resources
             this.inputFromClient.close();
             this.outputToClient.close();
 

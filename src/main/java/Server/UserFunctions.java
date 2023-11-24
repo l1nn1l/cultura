@@ -25,10 +25,6 @@ public class UserFunctions {
             }
             else {
                 System.out.println("Login failed");
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setContentText("Something went wrong with the login. Please try again.");
-                alert.showAndWait();
                 return false;
             }
 
@@ -45,10 +41,6 @@ public class UserFunctions {
             return true;
         } else {
             System.out.println("Signup failed. Invalid Entries.");
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Signup Failed");
-            alert.setContentText("Something went wrong with the signup. Please try again.");
-            alert.showAndWait();
             return false;
         }
     }
