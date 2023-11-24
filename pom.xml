@@ -20,12 +20,8 @@
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.27</version> 
-        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -36,6 +32,24 @@
                     <release>11</release>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>exec:java</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>Server.Server</mainClass> <!-- Replace with your server main class -->
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -60,7 +74,7 @@
                     <archive>
                         <manifestEntries>
                             <Main-Class>com.cultura.App</Main-Class>
-                            <Module-Name>com.cultura</Module-Name> 
+                            <Module-Name>com.cultura</Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

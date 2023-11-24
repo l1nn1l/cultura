@@ -30,9 +30,9 @@
    <right>
       <AnchorPane prefHeight="500.0" prefWidth="365.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
          <children>
-            <TextField layoutX="76.0" layoutY="170.0" prefHeight="26.0" prefWidth="200.0" promptText="Username" style="-fx-background-color: white; -fx-border-color: cccccc; -fx-border-radius: 10px;" />
-            <PasswordField layoutX="76.0" layoutY="213.0" prefWidth="200.0" promptText="Password" style="-fx-background-color: white; -fx-border-color: cccccc; -fx-border-radius: 10px;" />
-            <Button fx:id="button_login" layoutX="76.0" layoutY="271.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 10px;" text="Login" textFill="WHITE" />
+            <TextField fx:id="usernameTextField" layoutX="76.0" layoutY="170.0" prefHeight="26.0" prefWidth="200.0" promptText="Username" style="-fx-background-color: white; -fx-border-color: cccccc; -fx-border-radius: 10px;" />
+            <PasswordField fx:id="passwordField" layoutX="76.0" layoutY="213.0" prefWidth="200.0" promptText="Password" style="-fx-background-color: white; -fx-border-color: cccccc; -fx-border-radius: 10px;" />
+            <Button fx:id="button_login" layoutX="76.0" layoutY="271.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 10px;" text="Login" textFill="WHITE" onAction="#handleLoginButton"/>
             <Text fill="#42a1a7" layoutX="58.0" layoutY="96.0" stroke="WHITE" strokeWidth="0.0" text="Welcome!" textAlignment="CENTER" wrappingWidth="221.76898193359375">
                <font>
                   <Font name="Myanmar MN" size="22.0" />

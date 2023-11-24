@@ -8,18 +8,35 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        // Initialize the Client
+        ClientManager clientManager = ClientManager.getInstance();
+        clientManager.initClient();
+        System.out.println(clientManager.getClient());
+
+        // Load the FXML for SignupController
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/cultura/signup.fxml"));
+        Parent signupRoot = fxmlLoader.load();
+        SignupController signupController = fxmlLoader.getController();
+        signupController.setClient(clientManager.getClient());
+
+        // Load the FXML for LoginController
+        fxmlLoader = new FXMLLoader(App.class.getResource("/com/cultura/login.fxml"));
+        Parent loginRoot = fxmlLoader.load();
+        LoginController loginController = fxmlLoader.getController();
+        loginController.setClient(clientManager.getClient());
+
         scene = new Scene(loadFXML("login"), 700, 500);
         stage.setScene(scene);
         stage.show();
+
+
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -34,5 +51,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }
