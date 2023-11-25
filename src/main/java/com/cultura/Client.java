@@ -30,11 +30,11 @@ public class Client {
             }
     }
 
-    public String sendRequest(Object request) throws IOException, ClassNotFoundException {
+    public Object sendRequest(Object request) throws IOException, ClassNotFoundException {
         System.out.println("sending the request");
         outputToServer.writeObject(request);
         System.out.println("sending the request...");
-        return (String) inputFromServer.readObject();
+        return inputFromServer.readObject();
     }
 
 

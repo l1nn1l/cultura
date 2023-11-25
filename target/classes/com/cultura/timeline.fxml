@@ -112,11 +112,8 @@
                                                 <Cursor fx:constant="HAND" />
                                              </cursor>
                                           </Button>
-                                          <VBox fx:id="postsContainer" alignment="TOP_CENTER" prefHeight="984.0" prefWidth="775.0" spacing="16.0">
+                                          <VBox fx:id="postsContainer" alignment="TOP_CENTER" prefHeight="1050.0" prefWidth="775.0" spacing="16.0">
                                              <children>
-                                                <fx:include source="post.fxml" />
-                                                <fx:include source="post.fxml" />
-                                                <fx:include source="post.fxml" />
                                              </children>
                                           </VBox>
                                        </children>

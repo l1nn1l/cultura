@@ -3,6 +3,7 @@ package Server;
 import com.cultura.CreateDB;
 import com.cultura.Tweet;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class UserFunctions {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/cultura_db";
@@ -78,5 +79,9 @@ public class UserFunctions {
     public static boolean postTweet(String username, String tweetText) {
         return CreateDB.addTweet(new Tweet(tweetText, username));
     }
+
+    /*public static Object getUsersPosts(String username){
+
+    }*/
 
 }

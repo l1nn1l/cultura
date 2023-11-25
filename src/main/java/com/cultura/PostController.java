@@ -58,6 +58,11 @@ public class PostController implements Initializable {
     private Reactions currentReaction;
     private Post post;
 
+    Client client;
+    public void setClient(Client client){
+        this.client = client;
+        System.out.println("client was set " + client);
+    }
 
     @FXML
     public void onReactionImgPressed(MouseEvent me){
@@ -137,6 +142,7 @@ public class PostController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        System.out.println("inside the init function!!");
         setData(getPost());
     }
 }

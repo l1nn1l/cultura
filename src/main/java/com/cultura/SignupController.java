@@ -52,7 +52,7 @@ public class SignupController {
               ClientManager clientManager = ClientManager.getInstance();
               client = clientManager.getClient();
           }
-            String response = client.sendRequest(signupRequest);
+            String response = (String) client.sendRequest(signupRequest);
           if (response.equals("Signup successful")){
               Alert alert = new Alert(Alert.AlertType.INFORMATION);
               alert.setTitle("Signup successful");

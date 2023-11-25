@@ -6,14 +6,15 @@ com\cultura\Requests\SignupRequest.class
 com\cultura\LoginController.class
 com\cultura\TimelineController.class
 module-info.class
-com\cultura\Requests\PostRequest.class
 com\cultura\ClientManager.class
 com\cultura\User.class
+com\cultura\Requests\GetUsersPostsRequest.class
 com\cultura\Follow.class
 Server\Server.class
 com\cultura\SignupController.class
 com\cultura\Client.class
 com\cultura\CreateDB.class
+com\cultura\Requests\MakePostRequest.class
 com\cultura\objects\Account.class
 com\cultura\objects\Reactions.class
 com\cultura\Requests\LoginRequest.class

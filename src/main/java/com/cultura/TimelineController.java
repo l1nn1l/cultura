@@ -1,12 +1,15 @@
 package com.cultura;
 
-import com.cultura.Requests.PostRequest;
+import com.cultura.Requests.MakePostRequest;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
 import java.io.IOException;
 
 public class TimelineController {
@@ -66,10 +69,10 @@ public class TimelineController {
         System.out.println("inside the post button");
         String postTextArea = PostTextArea.getText();
         String username = client.username;
-        PostRequest postRequest = new PostRequest(username, postTextArea);
+        MakePostRequest postRequest = new MakePostRequest(username, postTextArea);
         System.out.println("created the post request!");
         try {
-        String response = client.sendRequest(postRequest);
+        String response = (String) client.sendRequest(postRequest);
         if (response.equals("Posted successfully")){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Post Added Successfully");
@@ -90,20 +93,24 @@ public class TimelineController {
             alert.showAndWait();
         }
     }
-    // @FXML
-    // private VBox childContainer;
+     @FXML
+     private VBox postsContainer;
 
-    // @FXML
-    // private void initialize() {
-    //     try {
-    //         FXMLLoader childLoader = new FXMLLoader(getClass().getResource("post.fxml"));
-    //         VBox childNode = childLoader.load();
-    //         PostController childController = childLoader.getController();
-    //         // Do something with the child node and controller
-    //         childContainer.getChildren().add(childNode);
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+     @FXML
+     private void initialize() {
+         try {
+             FXMLLoader childLoader = new FXMLLoader(getClass().getResource("post.fxml"));
+             VBox childNode = childLoader.load();
+             PostController childController = childLoader.getController();
+             postsContainer.getChildren().add(childNode);
+
+             FXMLLoader childLoader1 = new FXMLLoader(getClass().getResource("post.fxml"));
+             VBox childNode1 = childLoader1.load();
+             PostController childController1 = childLoader.getController();
+             postsContainer.getChildren().add(childNode1);
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+     }
     
 }

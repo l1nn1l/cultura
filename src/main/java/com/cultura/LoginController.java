@@ -38,7 +38,7 @@ public class LoginController {
                 ClientManager clientManager = ClientManager.getInstance();
                 client = clientManager.getClient();
             }
-            String response = client.sendRequest(loginRequest);
+            String response = (String) client.sendRequest(loginRequest);
             if (response.equals("Login successful")){
                 client.username = username;
                 System.out.println("client is in login : " + client);
