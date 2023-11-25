@@ -8,14 +8,17 @@ public class Server {
 
     public static void main(String[] args) throws IOException {
 
-       /* if ((args.length) < 1){
+        System.out.println(args.length);
+        if ((args.length) < 1){
+            System.out.println("enter the port number!");
             System.exit(-1);
         }
 
-        int port = Integer.parseInt(args[0]);*/
+        int port = Integer.parseInt(args[0]);
 
-        ServerSocket serverSocket = new ServerSocket(5056);
-        System.out.println("server is running");
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("server is runningr");
+        System.out.println(port + " number");
 
         // Server keeps on receiving new Clients
         while (true) {

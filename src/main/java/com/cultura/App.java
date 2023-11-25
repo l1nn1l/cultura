@@ -32,10 +32,15 @@ public class App extends Application {
         LoginController loginController = fxmlLoader.getController();
         loginController.setClient(clientManager.getClient());
 
+        // Load the FXML for TimelineController
+        fxmlLoader = new FXMLLoader(App.class.getResource("/com/cultura/timeline.fxml"));
+        Parent timelineRoot = fxmlLoader.load();
+        TimelineController timelineController = fxmlLoader.getController();
+        timelineController.setClient(clientManager.getClient());
+
         scene = new Scene(loadFXML("login"), 700, 500);
         stage.setScene(scene);
         stage.show();
-
 
     }
 

@@ -40,6 +40,8 @@ public class LoginController {
             }
             String response = client.sendRequest(loginRequest);
             if (response.equals("Login successful")){
+                client.username = username;
+                System.out.println("client is in login : " + client);
                 App.setRoot("timeline");
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);

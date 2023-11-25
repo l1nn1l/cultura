@@ -1,13 +1,13 @@
 package Server;
 
-import javafx.scene.control.Alert;
+import com.cultura.CreateDB;
+import com.cultura.Tweet;
 import java.sql.*;
 
 public class UserFunctions {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/cultura_db";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "4vPRBRYJU9.";
-
 
     public static boolean loginUser(String username, String password) {
         try {
@@ -45,7 +45,6 @@ public class UserFunctions {
         }
     }
 
-
     private static boolean signupUserHelper(String username, String password, String name, String email){
 
         Connection connection = null;
@@ -75,4 +74,9 @@ public class UserFunctions {
         }
         return true;
     }
+
+    public static boolean postTweet(String username, String tweetText) {
+        return CreateDB.addTweet(new Tweet(tweetText, username));
+    }
+
 }

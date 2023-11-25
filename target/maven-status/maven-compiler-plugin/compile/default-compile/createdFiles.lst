@@ -1,3 +1,4 @@
+com\cultura\Tweet.class
 Server\UserFunctions.class
 com\cultura\objects\Post.class
 Server\ClientHandler.class
@@ -5,7 +6,10 @@ com\cultura\Requests\SignupRequest.class
 com\cultura\LoginController.class
 com\cultura\TimelineController.class
 module-info.class
+com\cultura\Requests\PostRequest.class
 com\cultura\ClientManager.class
+com\cultura\User.class
+com\cultura\Follow.class
 Server\Server.class
 com\cultura\SignupController.class
 com\cultura\Client.class

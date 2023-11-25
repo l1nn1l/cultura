@@ -1,9 +1,12 @@
 package Server;
 import com.cultura.Requests.LoginRequest;
+import com.cultura.Requests.PostRequest;
 import com.cultura.Requests.SignupRequest;
+import com.cultura.objects.Post;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ClientHandler extends Thread {
     final Socket clientSocket;
@@ -70,7 +73,23 @@ public class ClientHandler extends Thread {
                         outputToClient.writeObject("Login failed");
                     }
                 }
-            } catch (IOException | ClassNotFoundException e) {
+                else if (received instanceof PostRequest){
+                    System.out.println("Client " + this.clientSocket + " is posting a tweet");
+                    PostRequest postRequest = (PostRequest) received;
+                    String username = postRequest.username;
+                    String postTweet = postRequest.postText;
+                    boolean worked = UserFunctions.postTweet(username, postTweet);
+                    if (worked){
+                        outputToClient.writeObject("Posted successfully");
+                    } else {
+                        outputToClient.writeObject("Post unsuccessful");
+                    }
+                }
+            } catch (SocketException e) {
+                System.out.println("Client has disconnected");
+                break;
+            }
+            catch (IOException | ClassNotFoundException e) {
                 try {
                     outputToClient.writeObject("Request failed. Please try again.");
                 } catch (IOException ex) {
@@ -82,7 +101,6 @@ public class ClientHandler extends Thread {
            // Closing resources
             this.inputFromClient.close();
             this.outputToClient.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

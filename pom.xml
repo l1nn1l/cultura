@@ -51,7 +51,10 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>Server.Server</mainClass> <!-- Replace with your server main class -->
+                    <mainClass>Server.Server</mainClass>
+                    <arguments>
+                        <argument>5056</argument>
+                </arguments>
                 </configuration>
             </plugin>
 

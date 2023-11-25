@@ -60,7 +60,7 @@
                   </Pane>
                   <Pane prefHeight="57.0" prefWidth="147.0">
                      <children>
-                        <Button fx:id="LogoutButton" alignment="CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="9.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="86.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 30;" text="Logout" textFill="WHITE">
+                        <Button fx:id="LogoutButton" alignment="CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="9.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="86.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 30;" text="Logout" textFill="WHITE" onAction="#handleLogoutButton">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -97,7 +97,7 @@
                                  <children>
                                     <VBox prefHeight="1092.0" prefWidth="812.0" spacing="34.0" style="-fx-background-color: #cce2e3;">
                                        <children> 
-                                          <Button fx:id="postMessageButton" alignment="CENTER" mnemonicParsing="false" onAction="#RevealTextArea" prefHeight="44.0" prefWidth="149.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 30;" text="Write a post" textFill="WHITE">
+                                          <Button fx:id="postMessageButton" alignment="CENTER" mnemonicParsing="false" onAction="#RevealTextArea" prefHeight="44.0" prefWidth="149.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 30;" text="Write a post" textFill="WHITE" >
                                              <graphic>
                                                 <ImageView fitHeight="25.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -193,7 +193,7 @@
                         </TextField>
                         <HBox alignment="TOP_RIGHT" prefHeight="32.0" prefWidth="485.0">
                            <children>
-                              <Button fx:id="PostMessageButton" mnemonicParsing="false" onAction="#SendMessageToServer" prefHeight="27.0" prefWidth="59.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 15;" text="Post" textFill="WHITE">
+                              <Button fx:id="PostMessageButton" mnemonicParsing="false" onAction="#handlePostButton" prefHeight="27.0" prefWidth="59.0" style="-fx-background-color: #42a1a7; -fx-background-radius: 15;" text="Post" textFill="WHITE">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>

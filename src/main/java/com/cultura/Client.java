@@ -1,17 +1,14 @@
 package com.cultura;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class Client {
 
     public Socket socket;
     public ObjectInputStream inputFromServer;
     public ObjectOutputStream outputToServer;
+    public String username;
 
     public Client () throws IOException {
 
@@ -27,10 +24,6 @@ public class Client {
             System.out.println(socket == null);
             outputToServer = new ObjectOutputStream(socket.getOutputStream());
             inputFromServer = new ObjectInputStream(socket.getInputStream());
-
-            String str = "initialize";
-         //   outputToServer.writeUTF(str);
-
         } catch (Exception e){
                 System.out.println("there was an error");
                 e.printStackTrace();
@@ -41,8 +34,8 @@ public class Client {
         System.out.println("sending the request");
         outputToServer.writeObject(request);
         System.out.println("sending the request...");
-
         return (String) inputFromServer.readObject();
     }
+
 
 }
