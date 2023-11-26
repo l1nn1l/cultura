@@ -4,7 +4,11 @@ public class Post {
     private Account account;
     private String date;
     private String caption;
-    private int totalReactions;
+    private int nbLikeReactions;
+    private int nbLoveReactions;
+    private int nbPartyReactions;
+    private int nbSmileReactions;
+    private int nbWowReactions;
     private int nbComments;
 
 
@@ -32,12 +36,44 @@ public class Post {
         this.caption = caption;
     }
 
-    public int getTotalReactions() {
-        return totalReactions;
+    public int getNbLikeReactions() {
+        return nbLikeReactions;
     }
 
-    public void setTotalReactions(int totalReactions) {
-        this.totalReactions = totalReactions;
+    public void setNbLikeReactions(int nbLikeReactions) {
+        this.nbLikeReactions = nbLikeReactions;
+    }
+
+    public int getNbLoveReactions() {
+        return nbLoveReactions;
+    }
+
+    public void setNbLoveReactions(int nbLoveReactions) {
+        this.nbLoveReactions = nbLoveReactions;
+    }
+
+    public int getNbSmileReactions() {
+        return nbSmileReactions;
+    }
+
+    public void setNbSmileReactions(int nbSmileReactions) {
+        this.nbSmileReactions = nbSmileReactions;
+    }
+
+    public int getNbPartyReactions() {
+        return nbPartyReactions;
+    }
+
+    public void setNbPartyReactions(int nbPartyReactions) {
+        this.nbPartyReactions = nbPartyReactions;
+    }
+
+    public int getNbWowReactions() {
+        return nbWowReactions;
+    }
+
+    public void setNbWowReactions(int nbWowReactions) {
+        this.nbWowReactions = nbWowReactions;
     }
 
     public int getNbComments() {

@@ -2,11 +2,15 @@ package com.cultura;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -15,7 +19,6 @@ import java.util.ResourceBundle;
 
 import com.cultura.objects.Account;
 import com.cultura.objects.Post;
-import com.cultura.objects.Reactions;
 
 public class PostController implements Initializable {
 
@@ -29,34 +32,20 @@ public class PostController implements Initializable {
     private TextFlow caption;
 
     @FXML
-    private Label nbReactions;
-
-    @FXML
     private Label nbComments;
 
     @FXML
-    private HBox reactionsContainer;
+    private HBox reactionsContainer, likeContainer;
 
     @FXML
-    private ImageView imgLike;
+    private ImageView imgLike, imgLove, imgSmile, imgParty, imgWow;
 
-    @FXML
-    private ImageView imgLove;
+    private ImageView currentReactionImage = null; //user's selected reaction
 
-    @FXML
-    private ImageView imgSmile;
+    private int userReactionCount = 1; //how many reactions a user is allowed to give
 
-    @FXML
-    private ImageView imgParty;
-
-    @FXML
-    private ImageView imgWow;
-
-    @FXML
-    private ImageView imgReaction;
-
-    private Reactions currentReaction;
     private Post post;
+
 
     Client client;
     public void setClient(Client client){
@@ -65,43 +54,100 @@ public class PostController implements Initializable {
     }
 
     @FXML
-    public void onReactionImgPressed(MouseEvent me){
-        switch (((ImageView) me.getSource()).getId()){
-            case "imgLove":
-                setReaction(Reactions.LOVE);
-                break;
-            case "imgSmile":
-                setReaction(Reactions.SMILE);
-                break;
-            case "imgParty":
-                setReaction(Reactions.PARTY);
-                break;
-            case "imgWow":
-                setReaction(Reactions.WOW);
-                break;
-            default:
-                setReaction(Reactions.LIKE);
-                break;
+    private void onReactionImgClicked(MouseEvent event) {
+        ImageView clickedImageView = (ImageView) event.getSource();
+
+        if (currentReactionImage != null) {
+            // decrement user's previously selected reaction
+            decrementReactionCount(currentReactionImage);
         }
+        
+        addClickedReaction(clickedImageView.getImage());
+
+        currentReactionImage = clickedImageView;
+    }
+    
+    private void decrementReactionCount(ImageView imageView) {
+
+        HBox existingBox = findReactionBox(imageView.getImage());
+        if (existingBox != null) {
+            // Decrement the count in the existing label
+            Label countLabel = (Label) existingBox.getChildren().get(1);
+            int currentCount = Integer.parseInt(countLabel.getText());
+            if (currentCount > 0) {
+                int newCount = currentCount - 1;
+                countLabel.setText(String.valueOf(newCount));
+
+                if (newCount == 0){
+                    likeContainer.getChildren().remove(existingBox);
+                }
+            } 
+            
+        }
+        userReactionCount++;
+    }
+    
+    private HBox findReactionBox(Image reactionImage) {
+        for (Node node : likeContainer.getChildren()) {
+            if (node instanceof HBox) {
+                HBox existingBox = (HBox) node;
+                ImageView existingImageView = (ImageView) existingBox.getChildren().get(0);
+    
+                if (existingImageView.getImage().equals(reactionImage)) {
+                    // Reaction is found
+                    return existingBox;
+                }
+            }
+        }
+        return null; // Reaction not found
     }
 
-    public void setReaction(Reactions reaction){
-        Image image = new Image(getClass().getResourceAsStream(reaction.getImgSrc()));
-        imgReaction.setImage(image);
 
-        if(currentReaction == Reactions.NON){
-            post.setTotalReactions(post.getTotalReactions() + 1);
+    private void addClickedReaction(Image reactionImage) {
+        ImageView clickedImageView = new ImageView(reactionImage);
+        clickedImageView.setFitHeight(30.0);
+        clickedImageView.setFitWidth(30.0);
+    
+        // Check if the reaction is already present
+        for (Node node : likeContainer.getChildren()) {
+            if (node instanceof HBox) {
+                HBox existingBox = (HBox) node;
+                ImageView existingImageView = (ImageView) existingBox.getChildren().get(0);
+    
+                if (existingImageView.getImage().equals(reactionImage) && userReactionCount == 1) {
+                    // Reaction is already present, update the label count
+                    Label countLabel = (Label) existingBox.getChildren().get(1);
+                    int currentCount = Integer.parseInt(countLabel.getText());
+                    countLabel.setText(String.valueOf(currentCount + 1));
+                    userReactionCount--;
+                    return; 
+                }
+            }
         }
+    
+        if(userReactionCount == 1){
+            // If the reaction is not present, create a new label for the count
+            Label countLabel = new Label("1"); 
+            countLabel.setPrefHeight(23);
+            countLabel.setPrefWidth(23);
+            countLabel.setTextFill(Color.web("#606266"));
+            countLabel.setFont(new Font("Segoe UI Historic", 18.0));
+        
+            HBox reactionBox = new HBox(clickedImageView, countLabel);
+            reactionBox.setAlignment(Pos.CENTER);
+            reactionBox.setSpacing(4.0);
+        
+            // Add the new reaction to likeContainer
+            likeContainer.getChildren().add(reactionBox);
+            userReactionCount--;
 
-        currentReaction = reaction;
-
-        if(currentReaction == Reactions.NON){
-            post.setTotalReactions(post.getTotalReactions() - 1);
         }
-
-        nbReactions.setText(String.valueOf(post.getTotalReactions()));
+        
     }
+    
+   
 
+    
     public void setData(Post post){
         this.post = post;
         username.setText(post.getAccount().getName());
@@ -112,6 +158,8 @@ public class PostController implements Initializable {
         if (captionText != null && !captionText.isEmpty()) {
 
             Text captionTextNode = new Text(captionText);
+            Font font = new Font(15.0);
+            captionTextNode.setFont(font);
             caption.getChildren().setAll(captionTextNode);
             caption.setVisible(true);
             caption.setManaged(true);  
@@ -121,20 +169,21 @@ public class PostController implements Initializable {
             caption.setManaged(false);
         }
 
-            nbReactions.setText(String.valueOf(post.getTotalReactions()));
             nbComments.setText(post.getNbComments() + " comments");
 
-            currentReaction = Reactions.NON;
+            setInitialReactions();
     }
 
-    private Post getPost(){
+    public Post getPost(){
         Post post = new Post();
         Account account = new Account();
         account.setName("Jane Doe");
         post.setAccount(account);
         post.setDate("Feb 13, 2023 at 12:00 PM");
         post.setCaption("Lorem ipsum dolor sit amet,consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.");
-        post.setTotalReactions(9);
+        post.setNbLoveReactions(1);
+        post.setNbLikeReactions(2);
+        post.setNbPartyReactions(3);
         post.setNbComments(2);
 
         return post;
@@ -142,7 +191,42 @@ public class PostController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("inside the init function!!");
+        System.out.println("inside the init post function!!");
         setData(getPost());
     }
+
+    private void setInitialReactions() {
+        // Check each reaction count in the Post object and add it to likeContainer
+        addInitialReaction(imgLike.getImage(), post.getNbLikeReactions());
+        addInitialReaction(imgLove.getImage(), post.getNbLoveReactions());
+        addInitialReaction(imgSmile.getImage(), post.getNbSmileReactions());
+        addInitialReaction(imgParty.getImage(), post.getNbPartyReactions());
+        addInitialReaction(imgWow.getImage(), post.getNbWowReactions());
+    }
+    
+    private void addInitialReaction(Image reactionImage, int count) {
+
+        if(count > 0) {
+
+            Label countLabel = new Label(String.valueOf(count));
+            countLabel.setPrefHeight(23);
+            countLabel.setPrefWidth(23);
+            countLabel.setTextFill(Color.web("#606266"));
+            countLabel.setFont(new Font("Segoe UI Historic", 18.0));
+    
+            ImageView reactionImageView = new ImageView(reactionImage);
+            reactionImageView.setFitHeight(30.0);
+            reactionImageView.setFitWidth(30.0);
+
+            HBox reactionBox = new HBox(reactionImageView, countLabel);
+            reactionBox.setAlignment(Pos.CENTER);
+            reactionBox.setSpacing(4.0);
+    
+            likeContainer.getChildren().add(reactionBox);
+        }
+
+        return;
+        
+    }
+    
 }
