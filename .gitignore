@@ -4,3 +4,14 @@ src/main/.DS_Store
 src/main/java/com/cultura/.DS_Store
 src/main/java/.DS_Store
 src/main/java/com/.DS_Store
+/shelf/
+/workspace.xml
+/target/
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+*.iml
+.idea/
