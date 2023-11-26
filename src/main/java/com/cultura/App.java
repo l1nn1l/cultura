@@ -43,7 +43,7 @@ public class App extends Application {
 
         scene = new Scene(loadFXML("login"), 700, 500);
         stage.setScene(scene);
-        stage.show();
+        stage.show(); 
 
     }
 
