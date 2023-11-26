@@ -57,6 +57,7 @@ public class PostController implements Initializable {
 
     private Reactions currentReaction;
     private Post post;
+    private Tweet tweet;
 
     Client client;
     public void setClient(Client client){
@@ -127,7 +128,32 @@ public class PostController implements Initializable {
             currentReaction = Reactions.NON;
     }
 
-    private Post getPost(){
+    public void setData(Tweet tweet){
+        System.out.println("inside set dataaaa");
+        this.tweet = tweet;
+        username.setText(tweet.getUsername());
+
+        date.setText(tweet.getTimestamp().toString());
+
+        String captionText = tweet.getText();
+        if (captionText != null && !captionText.isEmpty()) {
+            Text captionTextNode = new Text(captionText);
+            caption.getChildren().setAll(captionTextNode);
+            caption.setVisible(true);
+            caption.setManaged(true);
+        } else {
+            caption.getChildren().clear();
+            caption.setVisible(false);
+            caption.setManaged(false);
+        }
+
+            nbReactions.setText(String.valueOf(post.getTotalReactions()));
+            nbComments.setText(post.getNbComments() + " comments");
+
+            currentReaction = Reactions.NON;
+    }
+
+    public Post getPost(){
         Post post = new Post();
         Account account = new Account();
         account.setName("Jane Doe");
@@ -142,7 +168,7 @@ public class PostController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("inside the init function!!");
+        System.out.println("inside the init post function!! ");
         setData(getPost());
     }
 }

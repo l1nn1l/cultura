@@ -1,6 +1,10 @@
 package com.cultura;
 
+import com.cultura.Requests.GetUsersPostsRequest;
 import com.cultura.Requests.MakePostRequest;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,8 +13,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
+import javafx.util.Duration;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TimelineController {
 
@@ -27,7 +32,9 @@ public class TimelineController {
     private TextField PostTextArea;
 
     @FXML
-    private Button PostMessageButton;
+    private VBox postsContainer;
+
+    private Timeline timeline;
 
     Client client;
     public void setClient(Client client){
@@ -44,14 +51,12 @@ public class TimelineController {
         WriteMode.setVisible(false);
     }
 
-    public void SendMessageToServer(ActionEvent event) {
-        //TBD
-    }
-
     @FXML
     public void handleLogoutButton(){
         try {
-        App.setRoot("login");
+            stopTimeline();
+            System.out.println("pressed logout!!");
+            App.setRoot("login");
         } catch (Exception e){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Logout Failed");
@@ -93,24 +98,64 @@ public class TimelineController {
             alert.showAndWait();
         }
     }
-     @FXML
-     private VBox postsContainer;
 
      @FXML
      private void initialize() {
-         try {
-             FXMLLoader childLoader = new FXMLLoader(getClass().getResource("post.fxml"));
-             VBox childNode = childLoader.load();
-             PostController childController = childLoader.getController();
-             postsContainer.getChildren().add(childNode);
+         if (client == null) {
+             ClientManager clientManager = ClientManager.getInstance();
+             client = clientManager.getClient();
+             System.out.println("username in time line " + clientManager.getClient().username);
+         }
+         System.out.println("username in time line " + client.username);
 
-             FXMLLoader childLoader1 = new FXMLLoader(getClass().getResource("post.fxml"));
-             VBox childNode1 = childLoader1.load();
-             PostController childController1 = childLoader.getController();
-             postsContainer.getChildren().add(childNode1);
-         } catch (IOException e) {
-             e.printStackTrace();
+         updateUsersPosts();
+         timeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> updateUsersPosts()));
+         timeline.setCycleCount(Timeline.INDEFINITE);
+         timeline.play();
+     }
+
+    private ArrayList<Tweet> getUsersPosts() {
+
+         GetUsersPostsRequest getUsersPostsRequest = new GetUsersPostsRequest(client.username);
+         System.out.println("get user posts username : " + client.username);
+         try {
+            return (ArrayList<Tweet>) client.sendRequest(getUsersPostsRequest);
+         } catch (ClassNotFoundException | IOException e){
+             return new ArrayList<>();
          }
      }
-    
+
+    private void updateUsersPosts() {
+        // Clear existing children
+        System.out.println("the one updating " + timeline);
+        Platform.runLater(() -> postsContainer.getChildren().clear());
+
+        ArrayList<Tweet> posts = getUsersPosts();
+        System.out.println(posts);
+        int size = posts.size();
+
+        System.out.println("posts returned successfully" + posts.size());
+
+        for (int i = size-1; i >= Math.max(size-3, 0); i--) {
+            FXMLLoader childLoader = new FXMLLoader(getClass().getResource("post.fxml"));
+            VBox childNode;
+            try {
+                childNode = childLoader.load();
+                PostController childController = childLoader.getController();
+                childController.setData(posts.get(i));
+
+                // Add the child on the JavaFX Application Thread
+                Platform.runLater(() -> postsContainer.getChildren().add(childNode));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void stopTimeline() {
+        if (timeline != null) {
+            timeline.pause();
+        }
+    }
+
 }

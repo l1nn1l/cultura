@@ -1,13 +1,16 @@
 package Server;
+import com.cultura.CreateDB;
 import com.cultura.Requests.GetUsersPostsRequest;
 import com.cultura.Requests.LoginRequest;
 import com.cultura.Requests.MakePostRequest;
 import com.cultura.Requests.SignupRequest;
+import com.cultura.Tweet;
 import com.cultura.objects.Post;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class ClientHandler extends Thread {
@@ -60,8 +63,6 @@ public class ClientHandler extends Thread {
                     } else {
                         outputToClient.writeObject("Signup failed");
                     }
-
-
                 }
                 else if (received instanceof LoginRequest) {
                     System.out.println("Client " + this.clientSocket + " is logging in");
@@ -86,19 +87,21 @@ public class ClientHandler extends Thread {
                     } else {
                         outputToClient.writeObject("Post unsuccessful");
                     }
-                }
-                else if (received instanceof GetUsersPostsRequest){
+                } else if (received instanceof GetUsersPostsRequest){
                     System.out.println("Client " + this.clientSocket + " is getting their posts");
                     GetUsersPostsRequest getUsersPostsRequest = (GetUsersPostsRequest) received;
                     String username = getUsersPostsRequest.username;
-                    /*Object returned = null;UserFunctions.getUsersPosts(username);
-                    if (returned instanceof Boolean){
-                        outputToClient.writeObject("Request failed");
-                    } else {
-                        ArrayList<Post> userPosts = (ArrayList<Post>) returned;
-                        outputToClient.writeObject(userPosts);
-                    }*/
+                    ArrayList<Tweet> userPosts = CreateDB.getUserTweets(username);
+                    outputToClient.writeObject(userPosts);
                 }
+                else {
+                    System.out.println("received something weird " + received);
+                }
+
+              /*  else if (received instanceof getPostsYouFollowRequest){
+                    CreateDB.getTweetsYouFollow(username);
+                    outputToClient.writeObject(returned);
+                }*/
             } catch (SocketException e) {
                 System.out.println("Client has disconnected");
                 break;

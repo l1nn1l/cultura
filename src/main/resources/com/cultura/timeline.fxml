@@ -21,7 +21,8 @@
 <?import javafx.scene.text.Text?>
 
 
-<StackPane prefHeight="633.0" prefWidth="894.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cultura.TimelineController">
+<StackPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="633.0" prefWidth="894.0" xmlns="http://javafx.com/javafx/21"
+            fx:controller="com.cultura.TimelineController">
    <children>
       <BorderPane fx:id="mainPage" minWidth="-Infinity" prefHeight="633.0" prefWidth="890.0" style="-fx-background-color: white;">
          <top>

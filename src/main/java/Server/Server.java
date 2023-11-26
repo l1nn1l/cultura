@@ -17,7 +17,7 @@ public class Server {
         int port = Integer.parseInt(args[0]);
 
         ServerSocket serverSocket = new ServerSocket(port);
-        System.out.println("server is runningr");
+        System.out.println("server is running");
         System.out.println(port + " number");
 
         // Server keeps on receiving new Clients
