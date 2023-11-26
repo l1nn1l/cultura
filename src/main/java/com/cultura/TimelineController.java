@@ -1,5 +1,6 @@
 package com.cultura;
 
+import com.cultura.Requests.GetFollowersPostRequest;
 import com.cultura.Requests.GetUsersPostsRequest;
 import com.cultura.Requests.MakePostRequest;
 import javafx.animation.KeyFrame;
@@ -32,7 +33,7 @@ public class TimelineController {
     private TextField PostTextArea;
 
     @FXML
-    private VBox postsContainer;
+    private VBox postsContainer, postsFollowers;
 
     private Timeline timeline;
 
@@ -109,6 +110,7 @@ public class TimelineController {
          System.out.println("username in time line " + client.username);
 
          updateUsersPosts();
+         displayPosts();
          timeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> updateUsersPosts()));
          timeline.setCycleCount(Timeline.INDEFINITE);
          timeline.play();
@@ -156,6 +158,35 @@ public class TimelineController {
         if (timeline != null) {
             timeline.pause();
         }
+    }
+
+    private ArrayList<Tweet> loadPosts() {
+        GetFollowersPostRequest GetFollowersPostsRequest = new GetFollowersPostRequest(client.username);
+        System.out.println("get user's followers posts username : " + client.username);
+        try {
+           return (ArrayList<Tweet>) client.sendRequest(GetFollowersPostsRequest);
+        } catch (ClassNotFoundException | IOException e){
+            return new ArrayList<>();
+        }
+    }
+
+    private void displayPosts(){
+       ArrayList<Tweet> posts = loadPosts();
+       System.out.println(posts);
+       int size = posts.size();
+       System.out.println("posts of followers returned successfully" + size);
+       for (int i = size-1; i >= Math.max(size-3, 0); i--) {
+           FXMLLoader childLoad = new FXMLLoader(getClass().getResource("post.fxml"));
+           VBox child;
+           try {
+               child = childLoad.load();
+               PostController childController = childLoad.getController();
+               childController.setData(posts.get(i));
+               Platform.runLater(() -> postsFollowers.getChildren().add(child));
+           } catch (IOException e) {
+               e.printStackTrace();
+           }
+       }
     }
 
 }

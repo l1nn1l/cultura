@@ -1,5 +1,6 @@
 package Server;
 import com.cultura.CreateDB;
+import com.cultura.Requests.GetFollowersPostRequest;
 import com.cultura.Requests.GetUsersPostsRequest;
 import com.cultura.Requests.LoginRequest;
 import com.cultura.Requests.MakePostRequest;
@@ -94,14 +95,18 @@ public class ClientHandler extends Thread {
                     ArrayList<Tweet> userPosts = CreateDB.getUserTweets(username);
                     outputToClient.writeObject(userPosts);
                 }
+                else if (received instanceof GetFollowersPostRequest){
+                    System.out.println("Client " + this.clientSocket + " is getting his follower's tweets");
+                    GetFollowersPostRequest GetFollowersPostRequest = (GetFollowersPostRequest) received;
+                    String username = GetFollowersPostRequest.username;
+                    ArrayList<Tweet> followersPosts = CreateDB.getTweetsYouFollow(username);
+                    outputToClient.writeObject(followersPosts);
+                }
                 else {
                     System.out.println("received something weird " + received);
                 }
 
-              /*  else if (received instanceof getPostsYouFollowRequest){
-                    CreateDB.getTweetsYouFollow(username);
-                    outputToClient.writeObject(returned);
-                }*/
+              
             } catch (SocketException e) {
                 System.out.println("Client has disconnected");
                 break;

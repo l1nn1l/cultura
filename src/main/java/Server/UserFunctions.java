@@ -8,13 +8,13 @@ import java.util.ArrayList;
 public class UserFunctions {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/cultura_db";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "4vPRBRYJU9.";
+    private static final String DB_PASSWORD = "rawan123";
 
     public static boolean loginUser(String username, String password) {
         try {
             System.out.println("inside user login");
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cultura_db", "root", "4vPRBRYJU9.");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/cultura_db", "root", "rawan123");
             String query = "SELECT * FROM USER WHERE username = ? AND password = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, username);

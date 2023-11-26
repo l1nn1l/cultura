@@ -8,19 +8,19 @@ public class CreateDB {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "cultura_db";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "4vPRBRYJU9.";
+    private static final String DB_PASSWORD = "rawan123";
 
     public static void main(String[] args) {
         createDB();
         createUsersTable();
         createTweetsTable();
-        Tweet tweet = new Tweet("hello from user2!", "user2");
+        //Tweet tweet = new Tweet("hello from user2!", "user2");
         //addTweet(tweet);
         //System.out.println(tweet);
 
         createFollowsTable();
 
-        System.out.print(getTweets());
+        //System.out.print(getTweets());
 
         //System.out.println(getUserTweets("user1"));
 
