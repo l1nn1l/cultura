@@ -80,8 +80,5 @@ public class UserFunctions {
         return CreateDB.addTweet(new Tweet(tweetText, username));
     }
 
-    /*public static Object getUsersPosts(String username){
-
-    }*/
 
 }

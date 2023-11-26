@@ -45,7 +45,7 @@ public class PostController implements Initializable {
     private int userReactionCount = 1; //how many reactions a user is allowed to give
 
     private Post post;
-
+    private Tweet tweet;
 
     Client client;
     public void setClient(Client client){
@@ -145,8 +145,6 @@ public class PostController implements Initializable {
         
     }
     
-   
-
     
     public void setData(Post post){
         this.post = post;
@@ -172,6 +170,31 @@ public class PostController implements Initializable {
             nbComments.setText(post.getNbComments() + " comments");
 
             setInitialReactions();
+    }
+
+    public void setData(Tweet tweet){
+        System.out.println("inside set dataaaa");
+        this.tweet = tweet;
+        username.setText(tweet.getUsername());
+
+        date.setText(tweet.getTimestamp().toString());
+
+        String captionText = tweet.getText();
+        if (captionText != null && !captionText.isEmpty()) {
+            Text captionTextNode = new Text(captionText);
+            caption.getChildren().setAll(captionTextNode);
+            caption.setVisible(true);
+            caption.setManaged(true);
+        } else {
+            caption.getChildren().clear();
+            caption.setVisible(false);
+            caption.setManaged(false);
+        }
+
+            // nbReactions.setText(String.valueOf(post.getTotalReactions()));
+            nbComments.setText(post.getNbComments() + " comments");
+
+            // currentReaction = Reactions.NON;
     }
 
     public Post getPost(){

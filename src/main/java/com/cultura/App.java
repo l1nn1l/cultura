@@ -13,6 +13,8 @@ public class App extends Application {
 
     private static Scene scene;
 
+    private static TimelineController timelineController; // Declare a static instance
+
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -28,26 +30,20 @@ public class App extends Application {
         signupController.setClient(clientManager.getClient());
 
         // Load the FXML for LoginController
-        fxmlLoader = new FXMLLoader(App.class.getResource("/com/cultura/login.fxml"));
-        Parent loginRoot = fxmlLoader.load();
-        LoginController loginController = fxmlLoader.getController();
+        FXMLLoader fxmlLoader1 = new FXMLLoader(App.class.getResource("/com/cultura/login.fxml"));
+        Parent loginRoot = fxmlLoader1.load();
+        LoginController loginController = fxmlLoader1.getController();
         loginController.setClient(clientManager.getClient());
 
-        // Load the FXML for TimelineController
-        fxmlLoader = new FXMLLoader(App.class.getResource("/com/cultura/timeline.fxml"));
-        Parent timelineRoot = fxmlLoader.load();
-        TimelineController timelineController = fxmlLoader.getController();
-        timelineController.setClient(clientManager.getClient());
-
         // Load the FXML for PostController
-        fxmlLoader = new FXMLLoader(App.class.getResource("/com/cultura/post.fxml"));
-        Parent postRoot = fxmlLoader.load();
-        PostController postController = fxmlLoader.getController();
+        FXMLLoader fxmlLoader2 = new FXMLLoader(App.class.getResource("/com/cultura/post.fxml"));
+        Parent postRoot = fxmlLoader2.load();
+        PostController postController = fxmlLoader2.getController();
         postController.setClient(clientManager.getClient());
 
         scene = new Scene(loadFXML("login"), 700, 500);
         stage.setScene(scene);
-        stage.show();
+        stage.show(); 
 
     }
 
