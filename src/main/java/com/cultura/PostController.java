@@ -347,7 +347,7 @@ private void onCommentClicked(MouseEvent event) {
     }
 
     public void setData(Tweet tweet){
-        System.out.println("inside set dataaaa");
+      //  System.out.println("inside set data");
         this.tweet = tweet;
         username.setText(tweet.getUsername());
 
@@ -392,7 +392,7 @@ private void onCommentClicked(MouseEvent event) {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("inside the init post function!!");
+      //  System.out.println("inside the init post function!!");
         setData(getPost());
     }
 

@@ -1,4 +1,6 @@
 package Server;
+import com.cultura.*;
+import com.cultura.Requests.*;
 import com.cultura.CreateDB;
 import com.cultura.Requests.GetComments;
 import com.cultura.Requests.GetFollowersPostRequest;
@@ -16,6 +18,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ClientHandler extends Thread {
     final Socket clientSocket;
@@ -105,6 +108,25 @@ public class ClientHandler extends Thread {
                     ArrayList<Tweet> followersPosts = CreateDB.getTweetsYouFollow(username);
                     outputToClient.writeObject(followersPosts);
                 }
+                else if (received instanceof FollowRequest) {
+                    System.out.println("Client " + this.clientSocket + " is sending a follow");
+                    FollowRequest followRequest = (FollowRequest) received;
+                    Follow follow = followRequest.follow;
+                    boolean followWorked = CreateDB.addFollow(follow);
+                    outputToClient.writeObject(followWorked ? "Follow added successfully" :
+                            "Follow unsuccessful");
+                }
+                else if (received instanceof GetAllUsersRequest) {
+                    System.out.println("Client " + this.clientSocket + " is requesting all usernames");
+                    ArrayList<String> allUsers = CreateDB.getAllUsernames();
+                    outputToClient.writeObject(allUsers);
+                }
+                else if (received instanceof GetFollowersRequest){
+                    System.out.println("Client " + this.clientSocket + " is requesting all followers");
+                    GetFollowersRequest getFollowersRequest = (GetFollowersRequest) received;
+                    ArrayList<String> followedUsers = CreateDB.getFollowsOfUser(getFollowersRequest.username);
+                    outputToClient.writeObject(followedUsers);
+                 }
 
                 else if (received instanceof MakeCommentRequest){
                     System.out.println("Client " + this.clientSocket + " is commenting on a tweet");
@@ -130,12 +152,25 @@ public class ClientHandler extends Thread {
 
                 else {
                     System.out.println("received something weird " + received);
+                    outputToClient.writeObject("received something weird");
                 }
 
               
             } catch (SocketException e) {
-                System.out.println("Client has disconnected");
-                break;
+                ActiveClientsManager activeClientsManager = ActiveClientsManager.getInstance();
+                activeClientsManager.removeActiveClient(clientSocket);
+                // Closing resources
+                Client client = ClientManager.getInstance().getClient();
+                //try {
+                  //  client.inputFromServer.close();
+                   // client.outputToServer.close();
+                    System.out.println("Client has disconnected");
+                    break;
+                //}
+                /*catch (IOException ex) {
+                    ex.printStackTrace();
+                    break;
+                }*/
             }
             catch (IOException | ClassNotFoundException e) {
                 try {

@@ -1,9 +1,14 @@
 package Server;
+import com.cultura.ActiveClientsManager;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Server {
+
 
 
     public static void main(String[] args) throws IOException {
@@ -20,14 +25,18 @@ public class Server {
         System.out.println("server is running");
         System.out.println(port + " number");
 
+        ActiveClientsManager activeClientsManager = ActiveClientsManager.getInstance();
+        activeClientsManager.initActiveClientsSet();
+
         // Server keeps on receiving new Clients
         while (true) {
             Socket clientSocket = null;
             try {
                 // ServerSocket waits for a Client to connect
                 clientSocket = serverSocket.accept();
-
+                activeClientsManager.addActiveClient(clientSocket);
                 System.out.println("A new client is connected : " + clientSocket);
+                System.out.println("socket list is " + activeClientsManager.getActiveClients());
 
                 // Receiving input and sending output to Client
                 InputStream inputStream = clientSocket.getInputStream();
@@ -43,7 +52,7 @@ public class Server {
                 thread.start();
 
             } catch (Exception e) {
-                System.out.println("this is not workinnnnnnngggggggggg");
+                System.out.println("this is not working");
                 clientSocket.close();
                 e.printStackTrace();
             }
