@@ -163,11 +163,9 @@ public class TimelineController {
 
     private void updateUsersPosts() {
         // Clear existing children
-        System.out.println("the one updating " + UserPostsTimeline);
         Platform.runLater(() -> postsContainer.getChildren().clear());
 
         ArrayList<Tweet> posts = getUsersPosts();
-        System.out.println(posts);
         int size = posts.size();
 
         System.out.println("posts returned successfully" + posts.size());
@@ -211,7 +209,6 @@ public class TimelineController {
 
         Platform.runLater(() -> postsFollowers.getChildren().clear());
         ArrayList<Tweet> posts = loadPosts();
-        System.out.println(posts);
         int size = posts.size();
         for (int i = size - 1; i >= Math.max(size - 3, 0); i--) {
             FXMLLoader childLoad = new FXMLLoader(getClass().getResource("post.fxml"));

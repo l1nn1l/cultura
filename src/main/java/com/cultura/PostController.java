@@ -94,7 +94,7 @@ public class PostController implements Initializable {
         ButtonType addCommentButton = new ButtonType("Add Comment", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(addCommentButton, ButtonType.CANCEL);
     
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("objects/dialogStyles.css").toExternalForm());
+   //     dialog.getDialogPane().getStylesheets().add(getClass().getResource("objects/dialogStyles.css").toExternalForm());
     
         Optional<ButtonType> result = dialog.showAndWait();
     
@@ -237,7 +237,7 @@ public class PostController implements Initializable {
     }
 
     public void setData(Tweet tweet){
-        System.out.println("inside set dataaaa");
+        System.out.println("inside set data");
         this.tweet = tweet;
         username.setText(tweet.getUsername());
 

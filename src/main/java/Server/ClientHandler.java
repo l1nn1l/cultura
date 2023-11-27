@@ -1,11 +1,10 @@
 package Server;
-import com.cultura.CreateDB;
+import com.cultura.*;
 import com.cultura.Requests.GetFollowersPostRequest;
 import com.cultura.Requests.GetUsersPostsRequest;
 import com.cultura.Requests.LoginRequest;
 import com.cultura.Requests.MakePostRequest;
 import com.cultura.Requests.SignupRequest;
-import com.cultura.Tweet;
 import com.cultura.objects.Post;
 
 import java.io.*;
@@ -13,6 +12,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ClientHandler extends Thread {
     final Socket clientSocket;
@@ -108,8 +108,19 @@ public class ClientHandler extends Thread {
 
               
             } catch (SocketException e) {
-                System.out.println("Client has disconnected");
-                break;
+                ActiveClientsManager activeClientsManager = ActiveClientsManager.getInstance();
+                activeClientsManager.removeActiveClient(clientSocket);
+                // Closing resources
+                Client client = ClientManager.getInstance().getClient();
+                try {
+                    client.inputFromServer.close();
+                    client.outputToServer.close();
+                    System.out.println("Client has disconnected");
+                    break;
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    break;
+                }
             }
             catch (IOException | ClassNotFoundException e) {
                 try {
