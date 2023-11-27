@@ -355,8 +355,8 @@ public class CreateDB {
         }
     }
 
-    public static ArrayList<Follow> getFollowsOfUser(String username) {
-        ArrayList<Follow> FollowsOfUser = new ArrayList<>();
+    public static ArrayList<String> getFollowsOfUser(String username) {
+        ArrayList<String> FollowsOfUser = new ArrayList<>();
 
         try {
             Connection connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
@@ -371,9 +371,7 @@ public class CreateDB {
 
             while (results.next()) {
                 String followingUsername = results.getString("following_username");
-
-                Follow follow = new Follow(username, followingUsername);
-                FollowsOfUser.add(follow);
+                FollowsOfUser.add(followingUsername);
             }
 
             results.close();
@@ -420,6 +418,28 @@ public class CreateDB {
         return tweets;
     }
 
+    public static ArrayList<String> getAllUsernames() {
+        ArrayList<String> usernames = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
+
+            String query = "SELECT username FROM user";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                ResultSet results = statement.executeQuery();
+
+                while (results.next()) {
+                    String username = results.getString("username");
+                    usernames.add(username);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return usernames;
+    }
 
 }
 

@@ -9,9 +9,12 @@ C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\j
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\Server\Server.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\module-info.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\objects\Comment.java
+C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Requests\FollowRequest.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\PostController.java
+C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Requests\GetAllUsersRequest.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Client.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\objects\Post.java
+C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\UserListCell.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\objects\Account.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Tweet.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Requests\SignupRequest.java
@@ -23,3 +26,4 @@ C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\j
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\TimelineController.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\Server\UserFunctions.java
 C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Requests\GetFollowersPostRequest.java
+C:\Users\Asus\OneDrive\Desktop\AUB\UNI Y3 S1\CMPS 242\Cultura\cultura\src\main\java\com\cultura\Requests\GetFollowersRequest.java

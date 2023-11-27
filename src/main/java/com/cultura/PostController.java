@@ -237,7 +237,7 @@ public class PostController implements Initializable {
     }
 
     public void setData(Tweet tweet){
-        System.out.println("inside set data");
+      //  System.out.println("inside set data");
         this.tweet = tweet;
         username.setText(tweet.getUsername());
 
@@ -282,7 +282,7 @@ public class PostController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("inside the init post function!!");
+      //  System.out.println("inside the init post function!!");
         setData(getPost());
     }
 

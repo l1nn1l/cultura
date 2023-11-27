@@ -1,5 +1,6 @@
 package com.cultura;
 
+import com.cultura.Requests.GetAllUsersRequest;
 import com.cultura.Requests.GetFollowersPostRequest;
 import com.cultura.Requests.GetUsersPostsRequest;
 import com.cultura.Requests.MakePostRequest;
@@ -50,11 +51,11 @@ public class TimelineController {
         System.out.println("client was set " + client);
     }
 
-    public void RevealTextArea(ActionEvent event) {
+    public void RevealTextArea() {
         WriteMode.setVisible(true);
     }
 
-    public void HideTextArea(ActionEvent event) {
+    public void HideTextArea() {
         PostTextArea.setText("");
         WriteMode.setVisible(false);
     }
@@ -126,10 +127,18 @@ public class TimelineController {
         FollowerPostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> displayPosts()));
         FollowerPostsTimeline.setCycleCount(Timeline.INDEFINITE);
         FollowerPostsTimeline.play();
+
         // Set the cell factory for userListView
-        userListView.setCellFactory(lv -> new UserListCell());
-        // Add example users for testing
-        userListView.getItems().addAll("User1", "User2", "User3", "Alice", "Bob", "Charlie");
+        userListView.setCellFactory(lv -> new UserListCell(client));
+
+        try {
+            ArrayList<String> usernames = (ArrayList<String>) client.sendRequest(new GetAllUsersRequest());
+            usernames.remove(client.username);
+            System.out.println("received usernames were " + usernames);
+            userListView.getItems().addAll(usernames);
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
         // Add listener to search_bar
         search_bar.textProperty().addListener((observable, oldValue, newValue) -> {
             filterUserList(newValue);
@@ -146,8 +155,15 @@ public class TimelineController {
         userListView.setVisible(true);
         userListPane.setVisible(true);
         userListView.getItems().clear();
-        userListView.getItems().addAll("User1", "User2", "User3", "Alice", "Bob", "Charlie"); // Reset the list
-        userListView.getItems().removeIf(username -> !username.toLowerCase().contains(query.toLowerCase()));
+        try {
+            System.out.println("inside filter request again!! " + query);
+            ArrayList<String> usernames = (ArrayList<String>) client.sendRequest(new GetAllUsersRequest());
+            usernames.remove(client.username);
+            userListView.getItems().addAll(usernames); // Reset the list
+            userListView.getItems().removeIf(username -> !username.toLowerCase().contains(query.toLowerCase()));
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private ArrayList<Tweet> getUsersPosts() {

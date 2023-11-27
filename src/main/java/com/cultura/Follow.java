@@ -1,6 +1,8 @@
 package com.cultura;
 
-public class Follow {
+import java.io.Serializable;
+
+public class Follow implements Serializable {
 
     private String followed_by_username;
     private String following_username;
