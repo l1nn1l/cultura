@@ -39,7 +39,6 @@ public class UserListCell extends ListCell<String> {
         if (item == null || empty) {
             setGraphic(null);
         } else {
-            System.out.println("item is " + item);
             usernameLabel.setText(item);
 
             // Check if the user is already followed

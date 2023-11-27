@@ -156,7 +156,6 @@ public class TimelineController {
         userListPane.setVisible(true);
         userListView.getItems().clear();
         try {
-            System.out.println("inside filter request again!! " + query);
             ArrayList<String> usernames = (ArrayList<String>) client.sendRequest(new GetAllUsersRequest());
             usernames.remove(client.username);
             userListView.getItems().addAll(usernames); // Reset the list

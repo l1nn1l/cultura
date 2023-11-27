@@ -81,6 +81,7 @@ public class ClientHandler extends Thread {
                     boolean worked = UserFunctions.postTweet(username, postTweet);
                     if (worked){
                         outputToClient.writeObject("Posted successfully");
+                        // broadcast to the others!!!
                     } else {
                         outputToClient.writeObject("Post unsuccessful");
                     }
@@ -128,16 +129,15 @@ public class ClientHandler extends Thread {
                 activeClientsManager.removeActiveClient(clientSocket);
                 // Closing resources
                 Client client = ClientManager.getInstance().getClient();
-                //try {
-                  //  client.inputFromServer.close();
-                   // client.outputToServer.close();
+                try {
+                    client.inputFromServer.close();
+                    client.outputToServer.close();
                     System.out.println("Client has disconnected");
                     break;
-                //}
-                /*catch (IOException ex) {
+                } catch (IOException ex) {
                     ex.printStackTrace();
                     break;
-                }*/
+                }
             }
             catch (IOException | ClassNotFoundException e) {
                 try {
