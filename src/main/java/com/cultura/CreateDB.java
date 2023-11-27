@@ -2,6 +2,8 @@ package com.cultura;
 import java.sql.*;
 import java.util.ArrayList;
 
+import com.cultura.objects.Reactions;
+
 
 public class CreateDB {
 
@@ -15,6 +17,7 @@ public class CreateDB {
         createUsersTable();
         createTweetsTable();
         createCommentsTable();
+        createReactionsTable();
         //Tweet tweet = new Tweet("testinggg from linn !", "linn");
         //addTweet(tweet);
         //System.out.println(tweet);
@@ -34,7 +37,10 @@ public class CreateDB {
         TweetComments comment = new TweetComments(1, "sara", "nice post rawan !");
         //addTweetComment(comment);
 
-        System.out.println(getTweetComments(8));
+        //System.out.println(getTweetComments(8));
+
+        Reactions reaction = new Reactions(1,"linn", "love");
+        System.out.println(addReaction(reaction));
 
     }
 
@@ -568,6 +574,153 @@ public class CreateDB {
     
         return comments;
     }
+    private static boolean createReactionsTable() {
+        Connection connection = null;
+        Statement statement = null;
 
+        try {
+            connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
+
+            statement = connection.createStatement();
+
+            String createReactionsTableSQL = "CREATE TABLE reactions (" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT," +
+                    "username VARCHAR(255) NOT NULL," +
+                    "tweet_id INT NOT NULL," +
+                    "reaction_type VARCHAR(20) NOT NULL," +
+                    "CONSTRAINT fk_reaction_user FOREIGN KEY (username) REFERENCES user(username)," +
+                    "CONSTRAINT fk_reaction_tweet FOREIGN KEY (tweet_id) REFERENCES tweets(id)," +
+                    "CONSTRAINT chk_reaction_type CHECK (reaction_type IN ('like', 'love', 'smile', 'party', 'wow'))" +
+                    ")";
+
+            statement.executeUpdate(createReactionsTableSQL);
+
+            System.out.println("Table 'reactions' created successfully");
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean addReaction(Reactions reaction) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+    
+        String addReactionSQL = "INSERT INTO reactions (username, tweet_id, reaction_type) VALUES (?, ?, ?)";
+    
+        try {
+            connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
+    
+            preparedStatement = connection.prepareStatement(addReactionSQL);
+    
+            preparedStatement.setString(1, reaction.getUsername());
+            preparedStatement.setInt(2, reaction.getTweetId());
+            preparedStatement.setString(3, reaction.getReactionType());
+    
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            System.out.println("Reaction added successfully.");
+
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static boolean updateReaction(Reactions reaction) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+    
+        String updateReactionSQL = "UPDATE reactions SET reaction_type = ? WHERE username = ? AND tweet_id = ?";
+    
+        try {
+            connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
+    
+            preparedStatement = connection.prepareStatement(updateReactionSQL);
+    
+            preparedStatement.setString(1, reaction.getReactionType());
+            preparedStatement.setString(2, reaction.getUsername());
+            preparedStatement.setInt(3, reaction.getTweetId());
+    
+            int rowsAffected = preparedStatement.executeUpdate();
+    
+            if (rowsAffected > 0) {
+                System.out.println("Reaction updated successfully.");
+                return true;
+            } else {
+                System.out.println("Failed to update reaction.");
+                return false;
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    
+    public static ArrayList<Reactions> getReactionsForTweet(int tweetId) {
+        ArrayList<Reactions> reactionsList = new ArrayList<>();
+    
+        try (Connection connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD)) {
+    
+            String query = "SELECT username, tweet_id, reaction_type FROM reactions WHERE tweet_id = ?";
+    
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, tweetId);
+    
+                try (ResultSet results = statement.executeQuery()) {
+                    while (results.next()) {
+                        String username = results.getString("username");
+                        String reactionType = results.getString("reaction_type");
+    
+                        Reactions reaction = new Reactions( tweetId, username, reactionType);
+                        reactionsList.add(reaction);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    
+        return reactionsList;
+    }
 }
 

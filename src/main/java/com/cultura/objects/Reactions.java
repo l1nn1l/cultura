@@ -1,34 +1,61 @@
 package com.cultura.objects;
 
-public enum Reactions {
-    NON(0, "src/main/resources/com/cultura/images/thumbs-up.png"),
-    LIKE(1,"src/main/resources/com/cultura/images/thumbs-up.png"),
-    LOVE(2,"src/main/resources/com/cultura/images/pink-heart.png"),
-    SMILE(3,"src/main/resources/com/cultura/images/smiling-face.png"),
-    PARTY(4,"src/main/resources/com/cultura/images/partying-face.png"),
-    WOW(5,"src/main/resources/com/cultura/images/hushed-face.png");
-
+public class Reactions {
     private int id;
-    private String imgSrc;
+    private String username;
+    private int tweetId;
+    private String reactionType;
 
-    Reactions(int id, String imgSrc) {
-        this.id = id;
-        this.imgSrc = imgSrc;
+    // Constructors
+
+    public Reactions() {
     }
 
-    public int getId() {
+    public Reactions(int tweetId, String username, String reactionType) {
+        this.username = username;
+        this.tweetId = tweetId;
+        this.reactionType = reactionType;
+    }
+
+    public int getReactionId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setReactionId(int id) {
         this.id = id;
     }
 
-    public String getImgSrc() {
-        return imgSrc;
+    public String getUsername() {
+        return username;
     }
 
-    public void setImgSrc(String imgSrc) {
-        this.imgSrc = imgSrc;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getTweetId() {
+        return tweetId;
+    }
+
+    public void setTweetId(int tweetId) {
+        this.tweetId = tweetId;
+    }
+
+    public String getReactionType() {
+        return reactionType;
+    }
+
+    public void setReactionType(String reactionType) {
+        this.reactionType = reactionType;
+    }
+
+    @Override
+    public String toString() {
+        return "Reactions{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", tweetId=" + tweetId +
+                ", reactionType='" + reactionType + '\'' +
+                '}';
     }
 }
