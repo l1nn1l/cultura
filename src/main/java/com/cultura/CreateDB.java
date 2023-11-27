@@ -8,13 +8,14 @@ public class CreateDB {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "cultura_db";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "4vPRBRYJU9.";
+    private static final String DB_PASSWORD = "rawan123";
 
     public static void main(String[] args) {
         createDB();
         createUsersTable();
         createTweetsTable();
-        //Tweet tweet = new Tweet("hello from user2!", "user2");
+        createCommentsTable();
+        //Tweet tweet = new Tweet("testinggg from linn !", "linn");
         //addTweet(tweet);
         //System.out.println(tweet);
 
@@ -22,13 +23,19 @@ public class CreateDB {
 
         //System.out.print(getTweets());
 
-        //System.out.println(getUserTweets("user1"));
+        //System.out.println(getUserTweets("rawan"));
 
         //new Follow("user1", "user2");
 
         //System.out.println(getFollowsOfUser("user1"));
 
-        //System.out.println(getTweetsYouFollow("user1"));
+        //System.out.println(getTweetsYouFollow("rawan"));
+
+        TweetComments comment = new TweetComments(1, "sara", "nice post rawan !");
+        //addTweetComment(comment);
+
+        System.out.println(getTweetComments(8));
+
     }
 
     private static boolean createDB(){
@@ -180,27 +187,40 @@ public class CreateDB {
     public static boolean addTweet(Tweet tweet) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
+        ResultSet generatedKeys = null;
+    
         String insertTweetSQL = "INSERT INTO tweets (username, text) VALUES (?, ?)";
-
+    
         try {
             connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
-
-            preparedStatement = connection.prepareStatement(insertTweetSQL);
-
+    
+            preparedStatement = connection.prepareStatement(insertTweetSQL, Statement.RETURN_GENERATED_KEYS);
+    
             preparedStatement.setString(1, tweet.getUsername());
             preparedStatement.setString(2, tweet.getText());
-
+    
             int rowsAffected = preparedStatement.executeUpdate();
-
-            System.out.println("Tweet added successfully.");
-
+    
+            if (rowsAffected > 0) {
+                // Retrieve the generated keys (tweet ID)
+                generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int tweetId = generatedKeys.getInt(1);
+                    tweet.setTweetId(tweetId);
+                    System.out.println("Tweet added successfully. Tweet ID: " + tweetId);
+                }
+            }
+    
             return rowsAffected > 0;
-
+    
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         } finally {
             try {
+                if (generatedKeys != null) {
+                    generatedKeys.close();
+                }
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
@@ -212,6 +232,7 @@ public class CreateDB {
             }
         }
     }
+    
 
     public static ArrayList<Tweet> getTweets() {
         ArrayList<Tweet> tweets = new ArrayList<>();
@@ -226,12 +247,13 @@ public class CreateDB {
             ResultSet results = statement.executeQuery("SELECT * FROM tweets");
 
             while (results.next()) {
+                int id = results.getInt("id");
                 String text = results.getString("text");
                 Timestamp timestamp = results.getTimestamp("timestamp");
                 String username = results.getString("username");
                 int like_count = results.getInt("likeCount");
 
-                Tweet tweet = new Tweet(text, timestamp, username, like_count);
+                Tweet tweet = new Tweet(id, text, timestamp, username, like_count);
                 tweets.add(tweet);
             }
 
@@ -259,11 +281,12 @@ public class CreateDB {
 
                 try (ResultSet results = statement.executeQuery()) {
                     while (results.next()) {
+                        int id = results.getInt("id");
                         String text = results.getString("text");
                         Timestamp timestamp = results.getTimestamp("timestamp");
                         int like_count = results.getInt("likeCount");
 
-                        Tweet tweet = new Tweet(text, timestamp, username, like_count);
+                        Tweet tweet = new Tweet(id, text, timestamp, username, like_count);
                         tweets.add(tweet);
                     }
                 }
@@ -403,12 +426,13 @@ public class CreateDB {
 
                 try (ResultSet results = statement.executeQuery()) {
                     while (results.next()) {
+                        int id = results.getInt("id");
                         String text = results.getString("text");
                         Timestamp timestamp = results.getTimestamp("timestamp");
                         String tweetUsername = results.getString("username");
                         int likeCount = results.getInt("likeCount");
 
-                        Tweet tweet = new Tweet(text, timestamp, tweetUsername, likeCount);
+                        Tweet tweet = new Tweet(id, text, timestamp, tweetUsername, likeCount);
                         tweets.add(tweet);
                     }
                 }
@@ -420,6 +444,110 @@ public class CreateDB {
         return tweets;
     }
 
+    private static boolean createCommentsTable() {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
+            statement = connection.createStatement();
+    
+            String createCommentsTableSQL = "CREATE TABLE comments (" +
+                    "id INT PRIMARY KEY AUTO_INCREMENT," +
+                    "tweet_id INT NOT NULL," +
+                    "username VARCHAR(255) NOT NULL," +
+                    "comment_text VARCHAR(255) DEFAULT NULL," +
+                    "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
+                    "FOREIGN KEY (tweet_id) REFERENCES tweets(id)," +
+                    "FOREIGN KEY (username) REFERENCES user(username)" +
+                    ")";
+            statement.executeUpdate(createCommentsTableSQL);
+    
+            System.out.println("Table 'comments' created successfully");
+            return true;
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean addTweetComment(TweetComments comment) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+    
+        String addCommentSQL = "INSERT INTO comments (tweet_id, username, comment_text) VALUES (?, ?, ?)";
+    
+        try {
+            connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
+    
+            preparedStatement = connection.prepareStatement(addCommentSQL);
+    
+            preparedStatement.setInt(1, comment.getTweetId());
+            preparedStatement.setString(2, comment.getUsername());
+            preparedStatement.setString(3, comment.getCommentText());
+    
+            int rowsAffected = preparedStatement.executeUpdate();
+    
+            System.out.println("Comment added successfully.");
+    
+            return rowsAffected > 0;
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static ArrayList<TweetComments> getTweetComments(int tweetId) {
+        ArrayList<TweetComments> comments = new ArrayList<>();
+    
+        try (Connection connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD)) {
+    
+            String query = "SELECT * FROM comments WHERE tweet_id = ?";
+    
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setInt(1, tweetId);
+    
+                try (ResultSet results = statement.executeQuery()) {
+                    while (results.next()) {
+                        int commentId = results.getInt("id");
+                        String username = results.getString("username");
+                        String commentText = results.getString("comment_text");
+                        Timestamp timestamp = results.getTimestamp("timestamp");
+    
+                        TweetComments comment = new TweetComments(commentId, tweetId, username, commentText, timestamp);
+                        comments.add(comment);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    
+        return comments;
+    }
 
 }
 

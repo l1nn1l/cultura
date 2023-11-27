@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 public class Tweet implements Serializable {
 
+    private int tweetId; 
     private String text;
     private Timestamp timestamp;
     private String username;
@@ -24,6 +25,22 @@ public class Tweet implements Serializable {
         this.timestamp = timestamp;
         this.username = username;
         this.like_count = like_count;
+    }
+
+    public Tweet(int id, String text, Timestamp timestamp, String username, int like_count) {
+        this.tweetId = id;
+        this.text = text;
+        this.timestamp = timestamp;
+        this.username = username;
+        this.like_count = like_count;
+    }
+
+    public int getTweetId() {
+        return tweetId;
+    }
+
+    public void setTweetId(int tweetId) {
+        this.tweetId = tweetId;
     }
 
     public int getLike_count() {
@@ -48,7 +65,8 @@ public class Tweet implements Serializable {
 
     public String toString() {
         return "Tweet{" +
-                "text='" + text + '\'' +
+                " tweetId=" + tweetId + '\'' +
+                ", text='" + text + '\'' +
                 ", timestamp=" + timestamp +
                 ", username='" + username + '\'' +
                 ", like_count=" + like_count +

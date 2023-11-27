@@ -1,10 +1,12 @@
 package com.cultura;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -21,11 +23,18 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.cultura.Requests.GetComments;
+import com.cultura.Requests.GetFollowersPostRequest;
+import com.cultura.Requests.MakeCommentRequest;
+import com.cultura.Requests.MakePostRequest;
 import com.cultura.objects.Account;
 import com.cultura.objects.Comment;
 import com.cultura.objects.Post;
@@ -48,6 +57,9 @@ public class PostController implements Initializable {
     private HBox reactionsContainer, likeContainer;
 
     @FXML
+    private HBox WriteMode;
+
+    @FXML
     private ImageView imgLike, imgLove, imgSmile, imgParty, imgWow;
 
     private ImageView currentReactionImage = null; //user's selected reaction
@@ -56,6 +68,9 @@ public class PostController implements Initializable {
 
     private Post post;
     private Tweet tweet;
+    private int selectedTweetId;
+    private List<Tweet> tweets = new ArrayList<>();  // Store the Tweet objects
+
 
     Client client;
     public void setClient(Client client){
@@ -66,51 +81,146 @@ public class PostController implements Initializable {
     @FXML
     private TextArea existingCommentsArea;
 
-    @FXML
-    private void onCommentClicked(MouseEvent event) {
-        // custom dialog
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Comments");
-    
-        existingCommentsArea = new TextArea();
-        existingCommentsArea.setEditable(false);
-        existingCommentsArea.setWrapText(true);
-    
-        // Populate the existing comments
-        for (Comment comment : post.getComments()) {
-            existingCommentsArea.appendText(comment.getCommenterUsername() + ": " + comment.getCommentText() + "\n");
-        }
-    
-        TextField newCommentField = new TextField();
-        newCommentField.setPromptText("Add a new comment...");
-    
-        // Set up the layout of the dialog
-        GridPane grid = new GridPane();
-        grid.add(existingCommentsArea, 0, 0);
-        grid.add(newCommentField, 0, 1);
-        dialog.getDialogPane().setContent(grid);
-        GridPane.setMargin(newCommentField, new Insets(12, 0, 0, 0));
-    
-        ButtonType addCommentButton = new ButtonType("Add Comment", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addCommentButton, ButtonType.CANCEL);
-    
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("objects/dialogStyles.css").toExternalForm());
-    
-        Optional<ButtonType> result = dialog.showAndWait();
-    
-        if (result.isPresent() && result.get() == addCommentButton) {
-            // User clicked "Add Comment" button
-            String newCommentText = newCommentField.getText();
-            
-            if (!newCommentText.isEmpty()) {
-                Comment comment = new Comment("User", newCommentText);
-                post.addComment(comment);
-                updateCommentsUI(comment);
-            }
-        }
+    public void HideCommentArea(ActionEvent event) {
+        existingCommentsArea.setText("");
+        WriteMode.setVisible(false);
+    }
 
+
+    @FXML
+private void onCommentClicked(MouseEvent event) {
+    // custom dialog
+
+    if (client == null) {
+        ClientManager clientManager = ClientManager.getInstance();
+        client = clientManager.getClient();
+    }
+    System.out.println("inside the comment dialog");
+    Dialog<ButtonType> dialog = new Dialog<>();
+    dialog.setTitle("Comments");
+
+    // Initialize existingCommentsArea if it is null
+    if (existingCommentsArea == null) {
+        existingCommentsArea = new TextArea();
+    }
+
+    existingCommentsArea.setEditable(false);
+    existingCommentsArea.setWrapText(true);
+    existingCommentsArea.clear();
+    updateCommentsUI(); // Load comments every time the dialog is opened
+
+    TextField newCommentField = new TextField();
+    newCommentField.setPromptText("Add a new comment...");
+    GridPane grid = new GridPane();
+    grid.add(existingCommentsArea, 0, 0);
+    grid.add(newCommentField, 0, 1);
+    dialog.getDialogPane().setContent(grid);
+    GridPane.setMargin(newCommentField, new Insets(12, 0, 0, 0));
+    ButtonType addCommentButton = new ButtonType("Add Comment", ButtonBar.ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(addCommentButton, ButtonType.CANCEL);
+
+    Optional<ButtonType> result = dialog.showAndWait();
+
+    if (result.isPresent() && result.get() == addCommentButton) {
+        String newCommentText = newCommentField.getText();
+        MakeCommentRequest commentRequest = new MakeCommentRequest(client.username, newCommentText, 8);
+        System.out.println("created the comment request!");
+        try {
+            String response = (String) client.sendRequest(commentRequest);
+            if (response.equals("Comment posted successfully")) {
+                // Update comments UI only after successful posting
+                updateCommentsUI();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Comment Added Successfully");
+                alert.setContentText("Comment Added Successfully!");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Post Failed");
+                alert.setContentText("Something went wrong with the request. Please try again.");
+                alert.showAndWait();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Request Failed");
+            alert.setContentText("Something went wrong with the request. Please try again.");
+            alert.showAndWait();
+        }
+    }
+}
+
+
+    private ArrayList<TweetComments> loadComments() {
+        int tweet_id = 8;
+        GetComments GetComments = new GetComments(tweet_id);
+        System.out.println("get comments of tweet  : " + tweet_id);
+        try {
+           return (ArrayList<TweetComments>) client.sendRequest(GetComments);
+        } catch (ClassNotFoundException | IOException e){
+            return new ArrayList<>();
+        }
+    }
+
+
+    private void updateCommentsUI() {
+        // Load and append comments to existingCommentsArea
+        ArrayList<TweetComments> commentsList = loadComments();
+        for (TweetComments comment : commentsList) {
+            System.out.println("<<<<<<<<<<<<<<<<<<" + comment.getUsername() + ": " + comment.getCommentText() + "\n");
+            existingCommentsArea.appendText(comment.getUsername() + ": " + comment.getCommentText() + "\n");
+        }
     }
     
+    
+
+        
+
+//     @FXML
+//     private void onCommentClicked(MouseEvent event) {
+//         // custom dialog
+//         Dialog<ButtonType> dialog = new Dialog<>();
+//         dialog.setTitle("Comments");
+    
+//         existingCommentsArea = new TextArea();
+//         existingCommentsArea.setEditable(false);
+//         existingCommentsArea.setWrapText(true);
+    
+//         // Populate the existing comments
+//         for (Comment comment : post.getComments()) {
+//             existingCommentsArea.appendText(comment.getCommenterUsername() + ": " + comment.getCommentText() + "\n");
+//         }
+    
+//         TextField newCommentField = new TextField();
+//         newCommentField.setPromptText("Add a new comment...");
+    
+//         // Set up the layout of the dialog
+//         GridPane grid = new GridPane();
+//         grid.add(existingCommentsArea, 0, 0);
+//         grid.add(newCommentField, 0, 1);
+//         dialog.getDialogPane().setContent(grid);
+//         GridPane.setMargin(newCommentField, new Insets(12, 0, 0, 0));
+    
+//         ButtonType addCommentButton = new ButtonType("Add Comment", ButtonBar.ButtonData.OK_DONE);
+//         dialog.getDialogPane().getButtonTypes().addAll(addCommentButton, ButtonType.CANCEL);
+    
+//    //     dialog.getDialogPane().getStylesheets().add(getClass().getResource("objects/dialogStyles.css").toExternalForm());
+    
+//         Optional<ButtonType> result = dialog.showAndWait();
+    
+//         if (result.isPresent() && result.get() == addCommentButton) {
+//             // User clicked "Add Comment" button
+//             String newCommentText = newCommentField.getText();
+            
+//             if (!newCommentText.isEmpty()) {
+//                 Comment comment = new Comment("User", newCommentText);
+//                 post.addComment(comment);
+//                 updateCommentsUI(comment);
+//             }
+//         }
+//     }
+
+
+
     private void updateCommentsUI(Comment comment) {
         // Append the new comment to the existing comments
         existingCommentsArea.appendText(comment.getCommenterUsername() + ": " + comment.getCommentText() + "\n");
@@ -273,9 +383,9 @@ public class PostController implements Initializable {
         post.setNbPartyReactions(3);
         post.setNbComments(2);
 
-        post.addComment(new Comment("User1", "Great post!"));
-        post.addComment(new Comment("User2", "I agree!"));
-        post.addComment(new Comment("User3", "Nice content!"));
+        //post.addComment(new Comment("User1", "Great post!"));
+        //post.addComment(new Comment("User2", "I agree!"));
+        //post.addComment(new Comment("User3", "Nice content!"));
 
         return post;
     }

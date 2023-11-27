@@ -3,6 +3,8 @@ package com.cultura.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cultura.TweetComments;
+
 public class Post {
     private Account account;
     private String date;
@@ -13,7 +15,8 @@ public class Post {
     private int nbSmileReactions;
     private int nbWowReactions;
     private int nbComments;
-    private List<Comment> comments;
+    private List<TweetComments> comments;
+    private int tweetId;
 
 
 
@@ -80,6 +83,13 @@ public class Post {
     public void setNbWowReactions(int nbWowReactions) {
         this.nbWowReactions = nbWowReactions;
     }
+    public int getTweetId() {
+        return tweetId;
+    }
+
+    public void setTweetId(int tweetId) {
+        this.tweetId = tweetId;
+    }
 
     public int getNbComments() {
         return nbComments;
@@ -89,14 +99,14 @@ public class Post {
         this.nbComments = nbComments;
     }
 
-    public void addComment(Comment comment) {
+    public void addComment(TweetComments comment) {
         if (comments == null) {
             comments = new ArrayList<>(); 
         }
         comments.add(comment);
     }
 
-    public List<Comment> getComments() {
+    public List<TweetComments> getComments() {
         return comments;
     }
 
