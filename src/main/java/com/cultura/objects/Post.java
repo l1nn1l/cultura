@@ -1,5 +1,8 @@
 package com.cultura.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Post {
     private Account account;
     private String date;
@@ -10,6 +13,8 @@ public class Post {
     private int nbSmileReactions;
     private int nbWowReactions;
     private int nbComments;
+    private List<Comment> comments;
+
 
 
     public Account getAccount() {
@@ -82,6 +87,17 @@ public class Post {
 
     public void setNbComments(int nbComments) {
         this.nbComments = nbComments;
+    }
+
+    public void addComment(Comment comment) {
+        if (comments == null) {
+            comments = new ArrayList<>(); 
+        }
+        comments.add(comment);
+    }
+
+    public List<Comment> getComments() {
+        return comments;
     }
 
 }
