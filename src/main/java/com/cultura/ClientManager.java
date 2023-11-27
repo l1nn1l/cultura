@@ -21,10 +21,6 @@ public class ClientManager {
             client = new Client();
             System.out.println("Client is running!!!");
 
-            // Closing resources
-            /*scan.close();
-            client.inputFromServer.close();
-            client.outputToServer.close();*/
         } catch (Exception e) {
             e.printStackTrace();
         }
