@@ -2,12 +2,19 @@ package com.cultura;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -15,9 +22,12 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.cultura.objects.Account;
+import com.cultura.objects.Comment;
 import com.cultura.objects.Post;
 
 public class PostController implements Initializable {
@@ -52,6 +62,60 @@ public class PostController implements Initializable {
         this.client = client;
         System.out.println("client was set " + client);
     }
+
+    @FXML
+    private TextArea existingCommentsArea;
+
+    @FXML
+    private void onCommentClicked(MouseEvent event) {
+        // custom dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Comments");
+    
+        existingCommentsArea = new TextArea();
+        existingCommentsArea.setEditable(false);
+        existingCommentsArea.setWrapText(true);
+    
+        // Populate the existing comments
+        for (Comment comment : post.getComments()) {
+            existingCommentsArea.appendText(comment.getCommenterUsername() + ": " + comment.getCommentText() + "\n");
+        }
+    
+        TextField newCommentField = new TextField();
+        newCommentField.setPromptText("Add a new comment...");
+    
+        // Set up the layout of the dialog
+        GridPane grid = new GridPane();
+        grid.add(existingCommentsArea, 0, 0);
+        grid.add(newCommentField, 0, 1);
+        dialog.getDialogPane().setContent(grid);
+        GridPane.setMargin(newCommentField, new Insets(12, 0, 0, 0));
+    
+        ButtonType addCommentButton = new ButtonType("Add Comment", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(addCommentButton, ButtonType.CANCEL);
+    
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("objects/dialogStyles.css").toExternalForm());
+    
+        Optional<ButtonType> result = dialog.showAndWait();
+    
+        if (result.isPresent() && result.get() == addCommentButton) {
+            // User clicked "Add Comment" button
+            String newCommentText = newCommentField.getText();
+            
+            if (!newCommentText.isEmpty()) {
+                Comment comment = new Comment("User", newCommentText);
+                post.addComment(comment);
+                updateCommentsUI(comment);
+            }
+        }
+
+    }
+    
+    private void updateCommentsUI(Comment comment) {
+        // Append the new comment to the existing comments
+        existingCommentsArea.appendText(comment.getCommenterUsername() + ": " + comment.getCommentText() + "\n");
+    }
+
 
     @FXML
     private void onReactionImgClicked(MouseEvent event) {
@@ -208,6 +272,10 @@ public class PostController implements Initializable {
         post.setNbLikeReactions(2);
         post.setNbPartyReactions(3);
         post.setNbComments(2);
+
+        post.addComment(new Comment("User1", "Great post!"));
+        post.addComment(new Comment("User2", "I agree!"));
+        post.addComment(new Comment("User3", "Nice content!"));
 
         return post;
     }

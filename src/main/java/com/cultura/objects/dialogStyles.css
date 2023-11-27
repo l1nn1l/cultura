@@ -1,0 +1,8 @@
+/* dialogStyles.css */
+
+.button {
+    -fx-background-color: #42a1a7; /* Green background color */
+    background-color: #42a1a7;
+    -fx-text-fill: white; /* White text color */
+    -fx-background-radius: 30; /* Corner radius */
+}
