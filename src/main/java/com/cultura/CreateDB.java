@@ -8,7 +8,7 @@ public class CreateDB {
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "cultura_db";
     private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "rawan123";
+    private static final String DB_PASSWORD = "4vPRBRYJU9.";
 
     public static void main(String[] args) {
         createDB();

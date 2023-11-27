@@ -40,6 +40,7 @@ public class ClientHandler extends Thread {
 
        while (true) {
             try {
+                // receive requests
                 received = inputFromClient.readObject();
                 System.out.println("we got the response");
                 System.out.println("received was " + received);
@@ -162,7 +163,9 @@ public class ClientHandler extends Thread {
                 activeClientsManager.removeActiveClient(clientSocket);
                 // Closing resources
                 Client client = ClientManager.getInstance().getClient();
-                try {
+                System.out.println("Client has disconnected");
+                break;
+                /*try {
                     client.inputFromServer.close();
                     client.outputToServer.close();
                     System.out.println("Client has disconnected");
@@ -170,7 +173,7 @@ public class ClientHandler extends Thread {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                     break;
-                }
+                }*/
             }
             catch (IOException | ClassNotFoundException e) {
                 try {

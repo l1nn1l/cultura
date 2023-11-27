@@ -1,9 +1,7 @@
 package com.cultura;
 
-import com.cultura.Requests.GetAllUsersRequest;
-import com.cultura.Requests.GetFollowersPostRequest;
-import com.cultura.Requests.GetUsersPostsRequest;
-import com.cultura.Requests.MakePostRequest;
+import com.cultura.Requests.*;
+import com.cultura.objects.Post;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -132,7 +130,9 @@ public class TimelineController {
         userListView.setCellFactory(lv -> new UserListCell(client));
 
         try {
-            ArrayList<String> usernames = (ArrayList<String>) client.sendRequest(new GetAllUsersRequest());
+            GetAllUsersRequest getAllUsersRequest = new GetAllUsersRequest();
+            System.out.println("created getallusers request");
+            ArrayList<String> usernames = (ArrayList<String>) client.sendRequest(getAllUsersRequest);
             usernames.remove(client.username);
             System.out.println("received usernames were " + usernames);
             userListView.getItems().addAll(usernames);

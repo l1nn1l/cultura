@@ -25,16 +25,13 @@ import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 import com.cultura.Requests.GetComments;
-import com.cultura.Requests.GetFollowersPostRequest;
 import com.cultura.Requests.MakeCommentRequest;
-import com.cultura.Requests.MakePostRequest;
 import com.cultura.objects.Account;
 import com.cultura.objects.Comment;
 import com.cultura.objects.Post;
@@ -67,6 +64,7 @@ public class PostController implements Initializable {
     private int userReactionCount = 1; //how many reactions a user is allowed to give
 
     private Post post;
+
     private Tweet tweet;
     private int selectedTweetId;
     private List<Tweet> tweets = new ArrayList<>();  // Store the Tweet objects
@@ -121,9 +119,9 @@ private void onCommentClicked(MouseEvent event) {
 
     Optional<ButtonType> result = dialog.showAndWait();
 
-    if (result.isPresent() && result.get() == addCommentButton) {
+        if (result.isPresent() && result.get() == addCommentButton) {
         String newCommentText = newCommentField.getText();
-        MakeCommentRequest commentRequest = new MakeCommentRequest(client.username, newCommentText, 8);
+        MakeCommentRequest commentRequest = new MakeCommentRequest(client.username, newCommentText, tweet.getTweetId());
         System.out.println("created the comment request!");
         try {
             String response = (String) client.sendRequest(commentRequest);
@@ -151,9 +149,9 @@ private void onCommentClicked(MouseEvent event) {
 
 
     private ArrayList<TweetComments> loadComments() {
-        int tweet_id = 8;
+        int tweet_id = tweet.getTweetId();
         GetComments GetComments = new GetComments(tweet_id);
-        System.out.println("get comments of tweet  : " + tweet_id);
+        System.out.println("get comments of tweet : " + tweet_id);
         try {
            return (ArrayList<TweetComments>) client.sendRequest(GetComments);
         } catch (ClassNotFoundException | IOException e){
@@ -170,47 +168,47 @@ private void onCommentClicked(MouseEvent event) {
             existingCommentsArea.appendText(comment.getUsername() + ": " + comment.getCommentText() + "\n");
         }
     }
-    
-    
 
-        
+
+
+
 
 //     @FXML
 //     private void onCommentClicked(MouseEvent event) {
 //         // custom dialog
 //         Dialog<ButtonType> dialog = new Dialog<>();
 //         dialog.setTitle("Comments");
-    
+
 //         existingCommentsArea = new TextArea();
 //         existingCommentsArea.setEditable(false);
 //         existingCommentsArea.setWrapText(true);
-    
+
 //         // Populate the existing comments
 //         for (Comment comment : post.getComments()) {
 //             existingCommentsArea.appendText(comment.getCommenterUsername() + ": " + comment.getCommentText() + "\n");
 //         }
-    
+
 //         TextField newCommentField = new TextField();
 //         newCommentField.setPromptText("Add a new comment...");
-    
+
 //         // Set up the layout of the dialog
 //         GridPane grid = new GridPane();
 //         grid.add(existingCommentsArea, 0, 0);
 //         grid.add(newCommentField, 0, 1);
 //         dialog.getDialogPane().setContent(grid);
 //         GridPane.setMargin(newCommentField, new Insets(12, 0, 0, 0));
-    
+
 //         ButtonType addCommentButton = new ButtonType("Add Comment", ButtonBar.ButtonData.OK_DONE);
 //         dialog.getDialogPane().getButtonTypes().addAll(addCommentButton, ButtonType.CANCEL);
-    
+
 //    //     dialog.getDialogPane().getStylesheets().add(getClass().getResource("objects/dialogStyles.css").toExternalForm());
-    
+
 //         Optional<ButtonType> result = dialog.showAndWait();
-    
+
 //         if (result.isPresent() && result.get() == addCommentButton) {
 //             // User clicked "Add Comment" button
 //             String newCommentText = newCommentField.getText();
-            
+
 //             if (!newCommentText.isEmpty()) {
 //                 Comment comment = new Comment("User", newCommentText);
 //                 post.addComment(comment);
@@ -235,12 +233,12 @@ private void onCommentClicked(MouseEvent event) {
             // decrement user's previously selected reaction
             decrementReactionCount(currentReactionImage);
         }
-        
+
         addClickedReaction(clickedImageView.getImage());
 
         currentReactionImage = clickedImageView;
     }
-    
+
     private void decrementReactionCount(ImageView imageView) {
 
         HBox existingBox = findReactionBox(imageView.getImage());
@@ -255,18 +253,18 @@ private void onCommentClicked(MouseEvent event) {
                 if (newCount == 0){
                     likeContainer.getChildren().remove(existingBox);
                 }
-            } 
-            
+            }
+
         }
         userReactionCount++;
     }
-    
+
     private HBox findReactionBox(Image reactionImage) {
         for (Node node : likeContainer.getChildren()) {
             if (node instanceof HBox) {
                 HBox existingBox = (HBox) node;
                 ImageView existingImageView = (ImageView) existingBox.getChildren().get(0);
-    
+
                 if (existingImageView.getImage().equals(reactionImage)) {
                     // Reaction is found
                     return existingBox;
@@ -281,45 +279,45 @@ private void onCommentClicked(MouseEvent event) {
         ImageView clickedImageView = new ImageView(reactionImage);
         clickedImageView.setFitHeight(30.0);
         clickedImageView.setFitWidth(30.0);
-    
+
         // Check if the reaction is already present
         for (Node node : likeContainer.getChildren()) {
             if (node instanceof HBox) {
                 HBox existingBox = (HBox) node;
                 ImageView existingImageView = (ImageView) existingBox.getChildren().get(0);
-    
+
                 if (existingImageView.getImage().equals(reactionImage) && userReactionCount == 1) {
                     // Reaction is already present, update the label count
                     Label countLabel = (Label) existingBox.getChildren().get(1);
                     int currentCount = Integer.parseInt(countLabel.getText());
                     countLabel.setText(String.valueOf(currentCount + 1));
                     userReactionCount--;
-                    return; 
+                    return;
                 }
             }
         }
-    
+
         if(userReactionCount == 1){
             // If the reaction is not present, create a new label for the count
-            Label countLabel = new Label("1"); 
+            Label countLabel = new Label("1");
             countLabel.setPrefHeight(23);
             countLabel.setPrefWidth(23);
             countLabel.setTextFill(Color.web("#606266"));
             countLabel.setFont(new Font("Segoe UI Historic", 18.0));
-        
+
             HBox reactionBox = new HBox(clickedImageView, countLabel);
             reactionBox.setAlignment(Pos.CENTER);
             reactionBox.setSpacing(4.0);
-        
+
             // Add the new reaction to likeContainer
             likeContainer.getChildren().add(reactionBox);
             userReactionCount--;
 
         }
-        
+
     }
-    
-    
+
+
     public void setData(Post post){
         this.post = post;
         username.setText(post.getAccount().getName());
@@ -334,7 +332,7 @@ private void onCommentClicked(MouseEvent event) {
             captionTextNode.setFont(font);
             caption.getChildren().setAll(captionTextNode);
             caption.setVisible(true);
-            caption.setManaged(true);  
+            caption.setManaged(true);
         } else {
             caption.getChildren().clear();
             caption.setVisible(false);
@@ -347,7 +345,7 @@ private void onCommentClicked(MouseEvent event) {
     }
 
     public void setData(Tweet tweet){
-      //  System.out.println("inside set data");
+
         this.tweet = tweet;
         username.setText(tweet.getUsername());
 
@@ -404,7 +402,7 @@ private void onCommentClicked(MouseEvent event) {
         addInitialReaction(imgParty.getImage(), post.getNbPartyReactions());
         addInitialReaction(imgWow.getImage(), post.getNbWowReactions());
     }
-    
+
     private void addInitialReaction(Image reactionImage, int count) {
 
         if(count > 0) {
@@ -414,7 +412,7 @@ private void onCommentClicked(MouseEvent event) {
             countLabel.setPrefWidth(23);
             countLabel.setTextFill(Color.web("#606266"));
             countLabel.setFont(new Font("Segoe UI Historic", 18.0));
-    
+
             ImageView reactionImageView = new ImageView(reactionImage);
             reactionImageView.setFitHeight(30.0);
             reactionImageView.setFitWidth(30.0);
@@ -422,12 +420,12 @@ private void onCommentClicked(MouseEvent event) {
             HBox reactionBox = new HBox(reactionImageView, countLabel);
             reactionBox.setAlignment(Pos.CENTER);
             reactionBox.setSpacing(4.0);
-    
+
             likeContainer.getChildren().add(reactionBox);
         }
 
         return;
-        
+
     }
-    
+
 }
