@@ -1,6 +1,16 @@
 package Server;
 import com.cultura.*;
 import com.cultura.Requests.*;
+import com.cultura.CreateDB;
+import com.cultura.Requests.GetComments;
+import com.cultura.Requests.GetFollowersPostRequest;
+import com.cultura.Requests.GetUsersPostsRequest;
+import com.cultura.Requests.LoginRequest;
+import com.cultura.Requests.MakeCommentRequest;
+import com.cultura.Requests.MakePostRequest;
+import com.cultura.Requests.SignupRequest;
+import com.cultura.Tweet;
+import com.cultura.TweetComments;
 import com.cultura.objects.Post;
 
 import java.io.*;
@@ -118,6 +128,29 @@ public class ClientHandler extends Thread {
                     ArrayList<String> followedUsers = CreateDB.getFollowsOfUser(getFollowersRequest.username);
                     outputToClient.writeObject(followedUsers);
                  }
+
+                else if (received instanceof MakeCommentRequest){
+                    System.out.println("Client " + this.clientSocket + " is commenting on a tweet");
+                    MakeCommentRequest commentRequest = (MakeCommentRequest) received;
+                    int tweetId = commentRequest.tweetId;
+                    String username = commentRequest.username;
+                    String comment = commentRequest.commentText;
+                    boolean worked = UserFunctions.postComment(tweetId, username, comment);
+                    if (worked){
+                        outputToClient.writeObject("Comment posted successfully");
+                    } else {
+                        outputToClient.writeObject("Comment post unsuccessful");
+                    }
+                }
+                else if (received instanceof GetComments){
+                    System.out.println("Client " + this.clientSocket + " is getting comments on post");
+                    GetComments getCommentsRequest = (GetComments) received;
+                    int tweetId = getCommentsRequest.tweetId;
+                    ArrayList<TweetComments> comments = CreateDB.getTweetComments(tweetId);
+                    outputToClient.writeObject(comments);
+                }
+
+
                 else {
                     System.out.println("received something weird " + received);
                     outputToClient.writeObject("received something weird");

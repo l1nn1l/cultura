@@ -2,6 +2,8 @@ package Server;
 
 import com.cultura.CreateDB;
 import com.cultura.Tweet;
+import com.cultura.TweetComments;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -80,5 +82,7 @@ public class UserFunctions {
         return CreateDB.addTweet(new Tweet(tweetText, username));
     }
 
-
+    public static boolean postComment(int tweetId, String username, String tweetText) {
+        return CreateDB.addTweetComment(new TweetComments(tweetId, username, tweetText));
+    }
 }
