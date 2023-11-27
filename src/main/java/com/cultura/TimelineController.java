@@ -35,7 +35,7 @@ public class TimelineController {
     @FXML
     private VBox postsContainer, postsFollowers;
 
-    private Timeline timeline;
+    private Timeline UserPostsTimeline, FollowerPostsTimeline;
 
     Client client;
     public void setClient(Client client){
@@ -55,7 +55,7 @@ public class TimelineController {
     @FXML
     public void handleLogoutButton(){
         try {
-            stopTimeline();
+            stopTimelines();
             System.out.println("pressed logout!!");
             App.setRoot("login");
         } catch (Exception e){
@@ -111,9 +111,14 @@ public class TimelineController {
 
          updateUsersPosts();
          displayPosts();
-         timeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> updateUsersPosts()));
-         timeline.setCycleCount(Timeline.INDEFINITE);
-         timeline.play();
+
+         UserPostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> updateUsersPosts()));
+         UserPostsTimeline.setCycleCount(Timeline.INDEFINITE);
+         UserPostsTimeline.play();
+
+         FollowerPostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> displayPosts()));
+         FollowerPostsTimeline.setCycleCount(Timeline.INDEFINITE);
+         FollowerPostsTimeline.play();
      }
 
     private ArrayList<Tweet> getUsersPosts() {
@@ -129,7 +134,7 @@ public class TimelineController {
 
     private void updateUsersPosts() {
         // Clear existing children
-        System.out.println("the one updating " + timeline);
+        System.out.println("the one updating " + UserPostsTimeline);
         Platform.runLater(() -> postsContainer.getChildren().clear());
 
         ArrayList<Tweet> posts = getUsersPosts();
@@ -154,9 +159,12 @@ public class TimelineController {
         }
     }
 
-    private void stopTimeline() {
-        if (timeline != null) {
-            timeline.pause();
+    private void stopTimelines() {
+        if (UserPostsTimeline != null) {
+            UserPostsTimeline.pause();
+        }
+        if (FollowerPostsTimeline != null) {
+            FollowerPostsTimeline.pause();
         }
     }
 
@@ -171,10 +179,11 @@ public class TimelineController {
     }
 
     private void displayPosts(){
+
+        Platform.runLater(() -> postsFollowers.getChildren().clear());
        ArrayList<Tweet> posts = loadPosts();
        System.out.println(posts);
        int size = posts.size();
-       System.out.println("posts of followers returned successfully" + size);
        for (int i = size-1; i >= Math.max(size-3, 0); i--) {
            FXMLLoader childLoad = new FXMLLoader(getClass().getResource("post.fxml"));
            VBox child;

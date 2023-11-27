@@ -137,11 +137,15 @@
                 </Tab>
                 <Tab>
                   <content>
-                    <AnchorPane fx:id="homeTab" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #cce2e3;" >
-                     <children>
-                        <VBox fx:id="postsFollowers" alignment="TOP_CENTER" prefHeight="1050.0" prefWidth="775.0" spacing="16.0"/>
-                     </children>
-                   </AnchorPane>
+                  <ScrollPane hbarPolicy="NEVER" style="-fx-background-color: #cce2e3;">
+                    <content>
+                    <AnchorPane fx:id="homeTab" minHeight="0.0" minWidth="0.0" prefHeight="1092.0" prefWidth="812.0" style="-fx-background-color: #cce2e3;">
+                        <children>
+                           <VBox fx:id="postsFollowers" alignment="TOP_CENTER" prefHeight="1050.0" prefWidth="775.0" spacing="16.0"/>
+                        </children>
+                     </AnchorPane>
+                     </content>
+                     </ScrollPane>
                   </content>
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true">
