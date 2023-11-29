@@ -1,5 +1,7 @@
 package com.cultura;
 
+import com.cultura.Requests.UpdateReactionsRequest;
+import com.cultura.objects.Reactions;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -169,10 +171,6 @@ private void onCommentClicked(MouseEvent event) {
         }
     }
 
-
-
-
-
 //     @FXML
 //     private void onCommentClicked(MouseEvent event) {
 //         // custom dialog
@@ -228,19 +226,19 @@ private void onCommentClicked(MouseEvent event) {
     @FXML
     private void onReactionImgClicked(MouseEvent event) {
         ImageView clickedImageView = (ImageView) event.getSource();
-
+        System.out.println( "clicked image was " + clickedImageView.getImage().getUrl() + " " + currentReactionImage);
         if (currentReactionImage != null) {
             // decrement user's previously selected reaction
             decrementReactionCount(currentReactionImage);
         }
-
+        System.out.println(" the current count is " + userReactionCount + " " + clickedImageView.getImage().getUrl());
+        currentReactionImage = clickedImageView;
         addClickedReaction(clickedImageView.getImage());
 
-        currentReactionImage = clickedImageView;
     }
 
     private void decrementReactionCount(ImageView imageView) {
-
+        System.out.println("decrementing " + imageView.getImage().getUrl());
         HBox existingBox = findReactionBox(imageView.getImage());
         if (existingBox != null) {
             // Decrement the count in the existing label
@@ -249,14 +247,15 @@ private void onCommentClicked(MouseEvent event) {
             if (currentCount > 0) {
                 int newCount = currentCount - 1;
                 countLabel.setText(String.valueOf(newCount));
-
+                // remove the reaction of the user
                 if (newCount == 0){
                     likeContainer.getChildren().remove(existingBox);
                 }
             }
 
         }
-        userReactionCount++;
+        System.out.println("done decrementing");
+        userReactionCount=1;
     }
 
     private HBox findReactionBox(Image reactionImage) {
@@ -279,14 +278,23 @@ private void onCommentClicked(MouseEvent event) {
         ImageView clickedImageView = new ImageView(reactionImage);
         clickedImageView.setFitHeight(30.0);
         clickedImageView.setFitWidth(30.0);
+        Reactions reactions = new Reactions(tweet.getTweetId(), client.username, reactionImage.getUrl());
+        try {
+            client.sendRequest(new UpdateReactionsRequest(reactions));
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
 
         // Check if the reaction is already present
+        System.out.println("entering node loop");
         for (Node node : likeContainer.getChildren()) {
+            System.out.println("first node loop");
             if (node instanceof HBox) {
                 HBox existingBox = (HBox) node;
                 ImageView existingImageView = (ImageView) existingBox.getChildren().get(0);
-
-                if (existingImageView.getImage().equals(reactionImage) && userReactionCount == 1) {
+                System.out.println("second node loop " + existingImageView.getImage().getUrl().equals(reactionImage.getUrl()) + " " + (userReactionCount == 1));
+                if (existingImageView.getImage().getUrl().equals(reactionImage.getUrl()) && userReactionCount == 1) {
+                    System.out.println("inside if statement");
                     // Reaction is already present, update the label count
                     Label countLabel = (Label) existingBox.getChildren().get(1);
                     int currentCount = Integer.parseInt(countLabel.getText());
@@ -309,9 +317,10 @@ private void onCommentClicked(MouseEvent event) {
             reactionBox.setAlignment(Pos.CENTER);
             reactionBox.setSpacing(4.0);
 
+            System.out.println("inside 2 if statement");
             // Add the new reaction to likeContainer
             likeContainer.getChildren().add(reactionBox);
-            userReactionCount--;
+            userReactionCount = 0;
 
         }
 
@@ -341,10 +350,10 @@ private void onCommentClicked(MouseEvent event) {
 
             nbComments.setText(post.getNbComments() + " comments");
 
-            setInitialReactions();
+            setInitialReactions(new ArrayList<Reactions>());
     }
 
-    public void setData(Tweet tweet){
+    public void setData(Tweet tweet, ArrayList<Reactions> reactions){
 
         this.tweet = tweet;
         username.setText(tweet.getUsername());
@@ -365,8 +374,8 @@ private void onCommentClicked(MouseEvent event) {
 
             // nbReactions.setText(String.valueOf(post.getTotalReactions()));
             nbComments.setText(post.getNbComments() + " comments");
-
-            // currentReaction = Reactions.NON;
+            setInitialReactions(reactions);
+            String currentReaction = "none";
     }
 
     public Post getPost(){
@@ -390,17 +399,59 @@ private void onCommentClicked(MouseEvent event) {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-      //  System.out.println("inside the init post function!!");
-        setData(getPost());
+       System.out.println("inside the init post function!!");
+       if (client == null) {
+            ClientManager clientManager = ClientManager.getInstance();
+            client = clientManager.getClient();
+        }
+       setData(getPost());
     }
 
-    private void setInitialReactions() {
+    private void setInitialReactions(ArrayList<Reactions> reactions) {
+        int like = 0, love = 0, smile = 0, party = 0, wow = 0;
+        String currentReaction = "none";
+        for (Reactions reaction : reactions){
+            switch (reaction.getReactionType()) {
+                case "like":
+                    like++;
+                    break;
+                case "love":
+                    love++;
+                    break;
+                case "smile":
+                    smile++;
+                    break;
+                case "party":
+                    party++;
+                    break;
+                case "wow":
+                    wow++;
+                    break;
+            }
+            if (reaction.getUsername().equals(client.username)){
+                currentReaction = reaction.getReactionType();
+                String url = reaction.getUrl();
+                if (url.contains("thumbs-up") || url.contains("like")){
+                    currentReactionImage = imgLike;
+                }else if (url.contains("pink-heart") || url.contains("love")){
+                    currentReactionImage = imgLove;
+                }else if (url.contains("smiling-face") || url.contains("smile")){
+                    currentReactionImage = imgSmile;
+                }else if (url.contains("partying-face") || url.contains("party")){
+                    currentReactionImage = imgParty;
+                }else if (url.contains("hushed-face") || url.contains("wow")){
+                    currentReactionImage = imgWow;
+                }
+                System.out.println(currentReactionImage + " " + reaction.getUrl() + " " + imgWow.getImage().getUrl());
+                System.out.println("current reaction is " + currentReaction + "!");
+            }
+        }
         // Check each reaction count in the Post object and add it to likeContainer
-        addInitialReaction(imgLike.getImage(), post.getNbLikeReactions());
-        addInitialReaction(imgLove.getImage(), post.getNbLoveReactions());
-        addInitialReaction(imgSmile.getImage(), post.getNbSmileReactions());
-        addInitialReaction(imgParty.getImage(), post.getNbPartyReactions());
-        addInitialReaction(imgWow.getImage(), post.getNbWowReactions());
+        addInitialReaction(imgLike.getImage(), like);
+        addInitialReaction(imgLove.getImage(),love);
+        addInitialReaction(imgSmile.getImage(), smile);
+        addInitialReaction(imgParty.getImage(), party);
+        addInitialReaction(imgWow.getImage(), wow);
     }
 
     private void addInitialReaction(Image reactionImage, int count) {

@@ -1,20 +1,35 @@
 package com.cultura.objects;
 
-public class Reactions {
+import java.io.Serializable;
+
+public class Reactions implements Serializable {
     private int id;
     private String username;
     private int tweetId;
     private String reactionType;
+    private String url;
 
     // Constructors
 
     public Reactions() {
     }
 
-    public Reactions(int tweetId, String username, String reactionType) {
+    public Reactions(int tweetId, String username, String url) {
         this.username = username;
         this.tweetId = tweetId;
-        this.reactionType = reactionType;
+        this.reactionType = "none";
+        if (url.contains("thumbs-up") || url.contains("like")){
+            this.reactionType = "like";
+        } else if (url.contains("pink-heart") || url.contains("love"))
+            this.reactionType = "love";
+        else if (url.contains("smiling-face") || url.contains("smile")){
+            this.reactionType = "smile";
+        } else if (url.contains("partying-face") || url.contains("party")){
+            this.reactionType = "party";
+        } else if (url.contains("hushed-face") || url.contains("wow")){
+            this.reactionType = "wow";
+        }
+        this.url = url;
     }
 
     public int getReactionId() {
@@ -27,6 +42,10 @@ public class Reactions {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public void setUsername(String username) {

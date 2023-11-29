@@ -11,7 +11,7 @@ import com.cultura.Requests.MakePostRequest;
 import com.cultura.Requests.SignupRequest;
 import com.cultura.Tweet;
 import com.cultura.TweetComments;
-import com.cultura.objects.Post;
+import com.cultura.objects.Reactions;
 
 import java.io.*;
 import java.net.Socket;
@@ -107,7 +107,9 @@ public class ClientHandler extends Thread {
                     System.out.println("Client " + this.clientSocket + " is getting his follower's tweets");
                     GetFollowersPostRequest GetFollowersPostRequest = (GetFollowersPostRequest) received;
                     String username = GetFollowersPostRequest.username;
+                    System.out.println("youre reqursting a user " + username);
                     ArrayList<Tweet> followersPosts = CreateDB.getTweetsYouFollow(username);
+                    System.out.println("followers posts: " +followersPosts);
                     outputToClient.writeObject(followersPosts);
                 }
                 else if (received instanceof FollowRequest) {
@@ -149,6 +151,20 @@ public class ClientHandler extends Thread {
                     int tweetId = getCommentsRequest.tweetId;
                     ArrayList<TweetComments> comments = CreateDB.getTweetComments(tweetId);
                     outputToClient.writeObject(comments);
+                }
+                else if (received instanceof GetReactionsForPostRequest){
+                    System.out.println("Client " + this.clientSocket + " is requesting post reactions");
+                    GetReactionsForPostRequest getReactionsForPostRequest = (GetReactionsForPostRequest) received;
+                    int tweetId = getReactionsForPostRequest.tweetId;
+                    ArrayList<Reactions> reactions = CreateDB.getReactionsForTweet(tweetId);
+                    outputToClient.writeObject(reactions);
+                }
+                else if (received instanceof UpdateReactionsRequest){
+                    System.out.println("Client " + this.clientSocket + " is requesting to update reactions");
+                    UpdateReactionsRequest updateReactionsRequest = (UpdateReactionsRequest) received;
+                    boolean updateWorked = CreateDB.updateReaction(updateReactionsRequest.reaction);
+                    System.out.println("the update status " );
+                    outputToClient.writeObject(updateWorked ? "Update successful" : "Update failed");
                 }
 
 

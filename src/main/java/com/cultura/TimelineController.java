@@ -2,6 +2,7 @@ package com.cultura;
 
 import com.cultura.Requests.*;
 import com.cultura.objects.Post;
+import com.cultura.objects.Reactions;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -191,11 +192,14 @@ public class TimelineController {
             try {
                 childNode = childLoader.load();
                 PostController childController = childLoader.getController();
-                childController.setData(posts.get(i));
-
+                // get the initial reactions
+                GetReactionsForPostRequest getReactionsForPostRequest = new GetReactionsForPostRequest(posts.get(i).getTweetId());
+                ArrayList<Reactions> reactions = ( ArrayList<Reactions>) client.sendRequest(getReactionsForPostRequest);
+                System.out.println("I got the initial reactions " + reactions);
+                childController.setData(posts.get(i), reactions);
                 // Add the child on the JavaFX Application Thread
                 Platform.runLater(() -> postsContainer.getChildren().add(childNode));
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -211,10 +215,12 @@ public class TimelineController {
     }
 
     private ArrayList<Tweet> loadPosts() {
-        GetFollowersPostRequest GetFollowersPostsRequest = new GetFollowersPostRequest(client.username);
+        GetFollowersPostRequest getFollowersPostsRequest = new GetFollowersPostRequest(client.username);
         System.out.println("get user's followers posts username : " + client.username);
         try {
-            return (ArrayList<Tweet>) client.sendRequest(GetFollowersPostsRequest);
+            ArrayList<Tweet> tweets = (ArrayList<Tweet>) client.sendRequest(getFollowersPostsRequest);
+            System.out.println("while loading " + tweets);
+            return (ArrayList<Tweet>) client.sendRequest(getFollowersPostsRequest);
         } catch (ClassNotFoundException | IOException e) {
             return new ArrayList<>();
         }
@@ -231,9 +237,12 @@ public class TimelineController {
             try {
                 child = childLoad.load();
                 PostController childController = childLoad.getController();
-                childController.setData(posts.get(i));
+                // get the initial reactions
+                GetReactionsForPostRequest getReactionsForPostRequest = new GetReactionsForPostRequest(posts.get(i).getTweetId());
+                ArrayList<Reactions> reactions = ( ArrayList<Reactions>) client.sendRequest(getReactionsForPostRequest);
+                childController.setData(posts.get(i), reactions);
                 Platform.runLater(() -> postsFollowers.getChildren().add(child));
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

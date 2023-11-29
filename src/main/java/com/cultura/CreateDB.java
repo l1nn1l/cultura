@@ -420,7 +420,7 @@ public class CreateDB {
 
         try {
             Connection connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
-
+            System.out.println("connected");
             String query = "SELECT * FROM tweets "
                     + "INNER JOIN follows ON follows.following_username = tweets.username "
                     + "WHERE follows.followed_by_username = ?";
@@ -440,11 +440,13 @@ public class CreateDB {
                         tweets.add(tweet);
                     }
                 }
+                System.out.println("finished looping");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
+        System.out.println("tweets "+tweets);
         return tweets;
     }
 
@@ -584,14 +586,15 @@ public class CreateDB {
             statement = connection.createStatement();
 
             String createReactionsTableSQL = "CREATE TABLE reactions (" +
-                    "id INT PRIMARY KEY AUTO_INCREMENT," +
                     "username VARCHAR(255) NOT NULL," +
                     "tweet_id INT NOT NULL," +
                     "reaction_type VARCHAR(20) NOT NULL," +
-                    "CONSTRAINT fk_reaction_user FOREIGN KEY (username) REFERENCES user(username)," +
+                    "PRIMARY KEY (username, tweet_id)," +
+            "CONSTRAINT fk_reaction_user FOREIGN KEY (username) REFERENCES user(username)," +
                     "CONSTRAINT fk_reaction_tweet FOREIGN KEY (tweet_id) REFERENCES tweets(id)," +
                     "CONSTRAINT chk_reaction_type CHECK (reaction_type IN ('like', 'love', 'smile', 'party', 'wow'))" +
                     ")";
+
 
             statement.executeUpdate(createReactionsTableSQL);
 
@@ -656,17 +659,18 @@ public class CreateDB {
     public static boolean updateReaction(Reactions reaction) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
-    
-        String updateReactionSQL = "UPDATE reactions SET reaction_type = ? WHERE username = ? AND tweet_id = ?";
-    
+        System.out.println(" the updated reaction was " + reaction.getReactionType() + " " + reaction.getReactionId() + " " + reaction.getUsername() + " " + reaction.getTweetId());
+        String updateReactionSQL = "INSERT INTO reactions (reaction_type, username, tweet_id) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE reaction_type = ?";
+
         try {
             connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
     
             preparedStatement = connection.prepareStatement(updateReactionSQL);
-    
+
             preparedStatement.setString(1, reaction.getReactionType());
             preparedStatement.setString(2, reaction.getUsername());
-            preparedStatement.setInt(3, reaction.getTweetId());
+            preparedStatement.setString(3, ""+reaction.getTweetId());
+            preparedStatement.setString(4, reaction.getReactionType());
     
             int rowsAffected = preparedStatement.executeUpdate();
     
