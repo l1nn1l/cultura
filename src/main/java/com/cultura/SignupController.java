@@ -37,7 +37,7 @@ public class SignupController {
     }
 
     @FXML
-    private void handleSignUpButton(){
+    private synchronized void handleSignUpButton(){
         System.out.println("inside handle sign up button");
         if (client == null){
             System.out.println("client null in signup");

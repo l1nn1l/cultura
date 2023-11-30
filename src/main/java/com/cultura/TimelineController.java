@@ -6,9 +6,11 @@ import com.cultura.objects.Reactions;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -18,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 public class TimelineController {
@@ -74,7 +77,7 @@ public class TimelineController {
     }
 
     @FXML
-    public void handlePostButton() {
+    public synchronized void handlePostButton() {
         if (client == null) {
             ClientManager clientManager = ClientManager.getInstance();
             client = clientManager.getClient();
@@ -108,7 +111,7 @@ public class TimelineController {
     }
 
     @FXML
-    private void initialize() {
+    private synchronized void initialize() throws IOException {
         if (client == null) {
             ClientManager clientManager = ClientManager.getInstance();
             client = clientManager.getClient();
@@ -116,9 +119,10 @@ public class TimelineController {
         }
         System.out.println("username in time line " + client.username);
 
-        updateUsersPosts();
-        displayPosts();
-
+         updateUsersPosts();
+         displayPosts();
+/*
+        // uncomment to allow for regular client-server architecture
         UserPostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> updateUsersPosts()));
         UserPostsTimeline.setCycleCount(Timeline.INDEFINITE);
         UserPostsTimeline.play();
@@ -126,6 +130,11 @@ public class TimelineController {
         FollowerPostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> displayPosts()));
         FollowerPostsTimeline.setCycleCount(Timeline.INDEFINITE);
         FollowerPostsTimeline.play();
+*/
+
+      //  ReadInputTimeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> readInputFromServer()));
+      //  ReadInputTimeline.setCycleCount(Timeline.INDEFINITE);
+      //  ReadInputTimeline.play();
 
         // Set the cell factory for userListView
         userListView.setCellFactory(lv -> new UserListCell(client));
@@ -147,7 +156,7 @@ public class TimelineController {
         });
     }
 
-    private void filterUserList(String query) {
+    private synchronized void filterUserList(String query) {
         if (query == null || query.isEmpty()) {
             userListView.setVisible(false);
             userListPane.setVisible(false);
@@ -166,18 +175,22 @@ public class TimelineController {
         }
     }
 
-    private ArrayList<Tweet> getUsersPosts() {
+    private synchronized ArrayList<Tweet> getUsersPosts() {
 
         GetUsersPostsRequest getUsersPostsRequest = new GetUsersPostsRequest(client.username);
         System.out.println("get user posts username : " + client.username);
         try {
-            return (ArrayList<Tweet>) client.sendRequest(getUsersPostsRequest);
+            Object response = client.sendRequest(getUsersPostsRequest);
+            if (response instanceof ArrayList)
+                return (ArrayList<Tweet>) response;
+            System.out.println("response was actually " + response);
+            return null;
         } catch (ClassNotFoundException | IOException e) {
             return new ArrayList<>();
         }
     }
 
-    private void updateUsersPosts() {
+    private synchronized void updateUsersPosts() {
         // Clear existing children
         Platform.runLater(() -> postsContainer.getChildren().clear());
 
@@ -214,19 +227,57 @@ public class TimelineController {
         }
     }
 
-    private ArrayList<Tweet> loadPosts() {
+    private synchronized ArrayList<Tweet> loadPosts() {
         GetFollowersPostRequest getFollowersPostsRequest = new GetFollowersPostRequest(client.username);
         System.out.println("get user's followers posts username : " + client.username);
         try {
-            ArrayList<Tweet> tweets = (ArrayList<Tweet>) client.sendRequest(getFollowersPostsRequest);
-            System.out.println("while loading " + tweets);
-            return (ArrayList<Tweet>) client.sendRequest(getFollowersPostsRequest);
+            Object response = client.sendRequest(getFollowersPostsRequest);
+            if (response instanceof ArrayList) {
+                ArrayList<Tweet> tweets = (ArrayList<Tweet>) response;
+                return tweets;
+            }
+            else {
+                System.out.println("while loading " + (String) response);
+                return new ArrayList<>();
+            }
         } catch (ClassNotFoundException | IOException e) {
             return new ArrayList<>();
         }
     }
 
-    private void displayPosts() {
+    public synchronized void addBroadCastedPost(Tweet tweet) {
+        Platform.runLater(() -> {
+            try {
+                boolean personal = tweet.getUsername().equals(client.username);
+                ObservableList<Node> children = personal ? postsContainer.getChildren()
+                        : postsFollowers.getChildren();
+                if (!children.isEmpty()) {
+                    Node earliestChild = children.get(Math.min(2,children.size()-1));
+                    children.remove(earliestChild);
+                }
+
+                FXMLLoader childLoader = new FXMLLoader(getClass().getResource("post.fxml"));
+                VBox childNode = childLoader.load();
+                PostController childController = childLoader.getController();
+
+                // get the initial reactions
+                System.out.println("getting the reactions");
+                GetReactionsForPostRequest getReactionsForPostRequest = new GetReactionsForPostRequest(tweet.getTweetId());
+                ArrayList<Reactions> reactions = (ArrayList<Reactions>) client.sendRequest(getReactionsForPostRequest);
+                System.out.println("got the reactions " + reactions);
+                childController.setData(tweet, reactions);
+                System.out.println("set the data after reactions");
+                if (personal)
+                    postsContainer.getChildren().add(0,childNode);
+                else
+                    postsFollowers.getChildren().add(0, childNode);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private synchronized void displayPosts() {
 
         Platform.runLater(() -> postsFollowers.getChildren().clear());
         ArrayList<Tweet> posts = loadPosts();

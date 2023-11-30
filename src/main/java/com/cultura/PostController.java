@@ -88,7 +88,7 @@ public class PostController implements Initializable {
 
 
     @FXML
-private void onCommentClicked(MouseEvent event) {
+private synchronized void onCommentClicked(MouseEvent event) {
     // custom dialog
 
     if (client == null) {
@@ -150,7 +150,7 @@ private void onCommentClicked(MouseEvent event) {
 }
 
 
-    private ArrayList<TweetComments> loadComments() {
+    private synchronized ArrayList<TweetComments> loadComments() {
         int tweet_id = tweet.getTweetId();
         GetComments GetComments = new GetComments(tweet_id);
         System.out.println("get comments of tweet : " + tweet_id);
@@ -166,7 +166,7 @@ private void onCommentClicked(MouseEvent event) {
         // Load and append comments to existingCommentsArea
         ArrayList<TweetComments> commentsList = loadComments();
         for (TweetComments comment : commentsList) {
-            System.out.println("<<<<<<<<<<<<<<<<<<" + comment.getUsername() + ": " + comment.getCommentText() + "\n");
+         //   System.out.println("<<<<<<<<<<<<<<<<<<" + comment.getUsername() + ": " + comment.getCommentText() + "\n");
             existingCommentsArea.appendText(comment.getUsername() + ": " + comment.getCommentText() + "\n");
         }
     }
@@ -358,7 +358,8 @@ private void onCommentClicked(MouseEvent event) {
         this.tweet = tweet;
         username.setText(tweet.getUsername());
 
-        date.setText(tweet.getTimestamp().toString());
+        if (tweet.getTimestamp() != null)
+            date.setText(tweet.getTimestamp().toString());
 
         String captionText = tweet.getText();
         if (captionText != null && !captionText.isEmpty()) {

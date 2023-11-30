@@ -1,7 +1,10 @@
 package com.cultura;
 
+import com.cultura.Requests.GetFollowersRequest;
+
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 public class Client {
 
@@ -34,7 +37,17 @@ public class Client {
         System.out.println("sending the request");
         outputToServer.writeObject(request);
         System.out.println("sending the request...");
-        return inputFromServer.readObject();
+        Object response = inputFromServer.readObject();
+        System.out.println("response was" + response);
+
+        if (response instanceof BroadCastPostResponse){
+            System.out.println("broadcastin obj");
+            BroadCastPostResponse broadCastPostResponse = (BroadCastPostResponse) response;
+            Controllers.timelineController.addBroadCastedPost(broadCastPostResponse.tweet);
+            response = inputFromServer.readObject();
+        }
+
+        return response;
     }
 
 

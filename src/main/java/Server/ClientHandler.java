@@ -16,9 +16,8 @@ import com.cultura.objects.Reactions;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 
 public class ClientHandler extends Thread {
     final Socket clientSocket;
@@ -79,6 +78,7 @@ public class ClientHandler extends Thread {
                     String password = loginRequest.password;
                     boolean worked = UserFunctions.loginUser(username, password);
                     if (worked) {
+                        ActiveClientsManager.getInstance().addActiveClient(clientSocket, outputToClient);
                         outputToClient.writeObject("Login successful");
                     } else {
                         outputToClient.writeObject("Login failed");
@@ -93,6 +93,7 @@ public class ClientHandler extends Thread {
                     if (worked){
                         outputToClient.writeObject("Posted successfully");
                         // broadcast to the others!!!
+                        broadcastNewPost(postRequest);
                     } else {
                         outputToClient.writeObject("Post unsuccessful");
                     }
@@ -109,7 +110,7 @@ public class ClientHandler extends Thread {
                     String username = GetFollowersPostRequest.username;
                     System.out.println("youre reqursting a user " + username);
                     ArrayList<Tweet> followersPosts = CreateDB.getTweetsYouFollow(username);
-                    System.out.println("followers posts: " +followersPosts);
+                    System.out.println("followers posts: " +followersPosts.size());
                     outputToClient.writeObject(followersPosts);
                 }
                 else if (received instanceof FollowRequest) {
@@ -173,12 +174,11 @@ public class ClientHandler extends Thread {
                     outputToClient.writeObject("received something weird");
                 }
 
-              
+
             } catch (SocketException e) {
                 ActiveClientsManager activeClientsManager = ActiveClientsManager.getInstance();
                 activeClientsManager.removeActiveClient(clientSocket);
                 // Closing resources
-                Client client = ClientManager.getInstance().getClient();
                 System.out.println("Client has disconnected");
                 break;
                 /*try {
@@ -205,6 +205,22 @@ public class ClientHandler extends Thread {
             this.outputToClient.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Method to broadcast a new post to all connected clients
+    private void broadcastNewPost(MakePostRequest postRequest) {
+
+        HashMap<Socket, ObjectOutputStream> activeClientsMap = ActiveClientsManager.getInstance().getActiveClientsMap();
+        System.out.println("we are broad ");
+        for (ObjectOutputStream clientOutputStream : activeClientsMap.values()) {
+            try {
+                // Send the new post to each connected client
+                clientOutputStream.writeObject(new BroadCastPostResponse(postRequest));
+            } catch (IOException e) {
+                // Handle exception (e.g., remove client from the list)
+                e.printStackTrace();
+            }
         }
     }
 }

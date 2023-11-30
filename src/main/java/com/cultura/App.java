@@ -53,7 +53,17 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        Parent parent = fxmlLoader.load();
+
+        // Save the controller if it's an instance of SignupController
+        if (fxmlLoader.getController() instanceof SignupController) {
+            Controllers.signupController = fxmlLoader.getController();
+        } else if (fxmlLoader.getController() instanceof TimelineController) {
+            Controllers.timelineController = fxmlLoader.getController();
+        } else if (fxmlLoader.getController() instanceof LoginController) {
+            Controllers.loginController = fxmlLoader.getController();
+        }
+        return parent;
     }
 
     public static void main(String[] args) {
