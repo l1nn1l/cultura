@@ -8,10 +8,8 @@ public class BroadCastPostResponse implements Serializable {
     public String responseType;
     public Tweet tweet;
 
-    public BroadCastPostResponse(Tweet tweet){
-        this.tweet = tweet;
-    }
-    public BroadCastPostResponse(MakePostRequest postRequest){
+    public BroadCastPostResponse(MakePostRequest postRequest, Integer tweetId){
         this.tweet = new Tweet(postRequest.postText, postRequest.username);
+        this.tweet.setTweetId(tweetId);
     }
 }

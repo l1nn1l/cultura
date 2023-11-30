@@ -78,7 +78,7 @@ public class UserFunctions {
         return true;
     }
 
-    public static boolean postTweet(String username, String tweetText) {
+    public static Integer postTweet(String username, String tweetText) {
         return CreateDB.addTweet(new Tweet(tweetText, username));
     }
 

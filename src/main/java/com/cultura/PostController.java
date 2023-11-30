@@ -166,7 +166,7 @@ private synchronized void onCommentClicked(MouseEvent event) {
         // Load and append comments to existingCommentsArea
         ArrayList<TweetComments> commentsList = loadComments();
         for (TweetComments comment : commentsList) {
-         //   System.out.println("<<<<<<<<<<<<<<<<<<" + comment.getUsername() + ": " + comment.getCommentText() + "\n");
+            System.out.println("<<<<<<<<<<<<<<<<<<" + comment.getUsername() + ": " + comment.getCommentText() + "\n");
             existingCommentsArea.appendText(comment.getUsername() + ": " + comment.getCommentText() + "\n");
         }
     }

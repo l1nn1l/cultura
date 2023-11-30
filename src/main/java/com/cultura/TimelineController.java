@@ -44,7 +44,7 @@ public class TimelineController {
 
     @FXML
     private ListView<String> userListView;
-    private Timeline UserPostsTimeline, FollowerPostsTimeline;
+    private Timeline UserPostsTimeline, FollowerPostsTimeline, ExplorePostsTimeline;
 
     Client client;
 
@@ -121,6 +121,7 @@ public class TimelineController {
 
          updateUsersPosts();
          displayPosts();
+         explorePosts();
 /*
         // uncomment to allow for regular client-server architecture
         UserPostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> updateUsersPosts()));
@@ -132,9 +133,9 @@ public class TimelineController {
         FollowerPostsTimeline.play();
 */
 
-      //  ReadInputTimeline = new Timeline(new KeyFrame(Duration.seconds(5), event -> readInputFromServer()));
-      //  ReadInputTimeline.setCycleCount(Timeline.INDEFINITE);
-      //  ReadInputTimeline.play();
+        ExplorePostsTimeline = new Timeline(new KeyFrame(Duration.seconds(8), event -> explorePosts()));
+        ExplorePostsTimeline.setCycleCount(Timeline.INDEFINITE);
+        ExplorePostsTimeline.play();
 
         // Set the cell factory for userListView
         userListView.setCellFactory(lv -> new UserListCell(client));
@@ -154,6 +155,47 @@ public class TimelineController {
             filterUserList(newValue);
 
         });
+    }
+
+    private synchronized ArrayList<Tweet> getAllPosts(){
+        GetExplorePostsRequest getExplorePostsRequest = new GetExplorePostsRequest();
+        System.out.println("get explore posts username : " + client.username);
+        try {
+            Object response = client.sendRequest(getExplorePostsRequest);
+            if (response instanceof ArrayList)
+                return (ArrayList<Tweet>) response;
+            System.out.println("response was actually " + response);
+            return null;
+        } catch (ClassNotFoundException | IOException e) {
+            return new ArrayList<>();
+        }
+    }
+    private synchronized void explorePosts() {
+        // Clear existing children
+        Platform.runLater(() -> postsEverybody.getChildren().clear());
+
+        ArrayList<Tweet> posts = getAllPosts();
+        int size = posts.size();
+
+        System.out.println("posts returned successfully" + posts.size());
+
+        for (int i = size - 1; i >= Math.max(size - 3, 0); i--) {
+            FXMLLoader childLoader = new FXMLLoader(getClass().getResource("post.fxml"));
+            VBox childNode;
+            try {
+                childNode = childLoader.load();
+                PostController childController = childLoader.getController();
+                // get the initial reactions
+                GetReactionsForPostRequest getReactionsForPostRequest = new GetReactionsForPostRequest(posts.get(i).getTweetId());
+                ArrayList<Reactions> reactions = ( ArrayList<Reactions>) client.sendRequest(getReactionsForPostRequest);
+                System.out.println("I got the initial reactions " + reactions);
+                childController.setData(posts.get(i), reactions);
+                // Add the child on the JavaFX Application Thread
+                Platform.runLater(() -> postsEverybody.getChildren().add(childNode));
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private synchronized void filterUserList(String query) {
@@ -176,6 +218,20 @@ public class TimelineController {
     }
 
     private synchronized ArrayList<Tweet> getUsersPosts() {
+        GetUsersPostsRequest getUsersPostsRequest = new GetUsersPostsRequest(client.username);
+        System.out.println("get user posts username : " + client.username);
+        try {
+            Object response = client.sendRequest(getUsersPostsRequest);
+            if (response instanceof ArrayList)
+                return (ArrayList<Tweet>) response;
+            System.out.println("response was actually " + response);
+            return null;
+        } catch (ClassNotFoundException | IOException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private synchronized ArrayList<Tweet> getExplorePosts() {
 
         GetUsersPostsRequest getUsersPostsRequest = new GetUsersPostsRequest(client.username);
         System.out.println("get user posts username : " + client.username);
@@ -224,6 +280,9 @@ public class TimelineController {
         }
         if (FollowerPostsTimeline != null) {
             FollowerPostsTimeline.pause();
+        }
+        if (ExplorePostsTimeline != null) {
+            ExplorePostsTimeline.pause();
         }
     }
 

@@ -89,11 +89,11 @@ public class ClientHandler extends Thread {
                     MakePostRequest postRequest = (MakePostRequest) received;
                     String username = postRequest.username;
                     String postTweet = postRequest.postText;
-                    boolean worked = UserFunctions.postTweet(username, postTweet);
-                    if (worked){
+                    Integer tweetId = UserFunctions.postTweet(username, postTweet);
+                    if (tweetId >= 0){
                         outputToClient.writeObject("Posted successfully");
                         // broadcast to the others!!!
-                        broadcastNewPost(postRequest);
+                        broadcastNewPost(postRequest, tweetId);
                     } else {
                         outputToClient.writeObject("Post unsuccessful");
                     }
@@ -151,6 +151,7 @@ public class ClientHandler extends Thread {
                     GetComments getCommentsRequest = (GetComments) received;
                     int tweetId = getCommentsRequest.tweetId;
                     ArrayList<TweetComments> comments = CreateDB.getTweetComments(tweetId);
+                    System.out.println("comments were " + comments);
                     outputToClient.writeObject(comments);
                 }
                 else if (received instanceof GetReactionsForPostRequest){
@@ -167,8 +168,12 @@ public class ClientHandler extends Thread {
                     System.out.println("the update status " );
                     outputToClient.writeObject(updateWorked ? "Update successful" : "Update failed");
                 }
-
-
+                else if (received instanceof GetExplorePostsRequest){
+                    System.out.println("Client " + this.clientSocket + " is requesting explore posts");
+                    GetExplorePostsRequest getExplorePostsRequest = (GetExplorePostsRequest) received;
+                    ArrayList<Tweet> tweets = CreateDB.getExploreTweets();
+                    outputToClient.writeObject(tweets);
+                }
                 else {
                     System.out.println("received something weird " + received);
                     outputToClient.writeObject("received something weird");
@@ -209,14 +214,14 @@ public class ClientHandler extends Thread {
     }
 
     // Method to broadcast a new post to all connected clients
-    private void broadcastNewPost(MakePostRequest postRequest) {
+    private void broadcastNewPost(MakePostRequest postRequest, Integer tweetId) {
 
         HashMap<Socket, ObjectOutputStream> activeClientsMap = ActiveClientsManager.getInstance().getActiveClientsMap();
         System.out.println("we are broad ");
         for (ObjectOutputStream clientOutputStream : activeClientsMap.values()) {
             try {
                 // Send the new post to each connected client
-                clientOutputStream.writeObject(new BroadCastPostResponse(postRequest));
+                clientOutputStream.writeObject(new BroadCastPostResponse(postRequest, tweetId));
             } catch (IOException e) {
                 // Handle exception (e.g., remove client from the list)
                 e.printStackTrace();

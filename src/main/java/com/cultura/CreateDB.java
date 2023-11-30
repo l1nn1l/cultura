@@ -190,7 +190,7 @@ public class CreateDB {
         return false;
     }
 
-    public static boolean addTweet(Tweet tweet) {
+    public static Integer addTweet(Tweet tweet) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet generatedKeys = null;
@@ -217,11 +217,14 @@ public class CreateDB {
                 }
             }
     
-            return rowsAffected > 0;
+            if (rowsAffected > 0){
+                return tweet.getTweetId();
+            } else
+                return -1;
     
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         } finally {
             try {
                 if (generatedKeys != null) {
@@ -240,12 +243,10 @@ public class CreateDB {
     }
     
 
-    public static ArrayList<Tweet> getTweets() {
+    public static ArrayList<Tweet> getExploreTweets() {
         ArrayList<Tweet> tweets = new ArrayList<>();
 
         try {
-
-
             Connection connection = DriverManager.getConnection(JDBC_URL + DB_NAME, DB_USER, DB_PASSWORD);
 
             Statement statement = connection.createStatement();
@@ -304,7 +305,6 @@ public class CreateDB {
         return tweets;
     }
 
-
     // table showing who is following who
     public static boolean createFollowsTable() {
         Connection connection = null;
@@ -345,7 +345,6 @@ public class CreateDB {
         }
         return false;
     }
-
 
     public static boolean addFollow(Follow follow) {
         Connection connection = null;
@@ -414,7 +413,6 @@ public class CreateDB {
         return FollowsOfUser;
     }
 
-
     public static ArrayList<Tweet> getTweetsYouFollow(String username) {
         ArrayList<Tweet> tweets = new ArrayList<>();
 
@@ -472,6 +470,7 @@ public class CreateDB {
 
         return usernames;
     }
+
     private static boolean createCommentsTable() {
         Connection connection = null;
         Statement statement = null;
@@ -511,6 +510,7 @@ public class CreateDB {
     }
 
     public static boolean addTweetComment(TweetComments comment) {
+        System.out.println("add this tweet comment " + comment.getCommentText() + " " + comment.getTweetId() + " " + comment.getUsername());
         Connection connection = null;
         PreparedStatement preparedStatement = null;
     
@@ -576,6 +576,7 @@ public class CreateDB {
     
         return comments;
     }
+
     private static boolean createReactionsTable() {
         Connection connection = null;
         Statement statement = null;
@@ -698,8 +699,7 @@ public class CreateDB {
             }
         }
     }
-    
-    
+
     public static ArrayList<Reactions> getReactionsForTweet(int tweetId) {
         ArrayList<Reactions> reactionsList = new ArrayList<>();
     
