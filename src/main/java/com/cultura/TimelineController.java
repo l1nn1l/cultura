@@ -248,11 +248,16 @@ public class TimelineController {
     public synchronized void addBroadCastedPost(Tweet tweet) {
         Platform.runLater(() -> {
             try {
+
+                ArrayList<String> followers = (ArrayList<String>) client.sendRequest(new GetFollowersRequest(client.username));
+                if (!(tweet.getUsername().equals(client.username) || followers.contains(tweet.getUsername()))){
+                    return;
+                }
                 boolean personal = tweet.getUsername().equals(client.username);
                 ObservableList<Node> children = personal ? postsContainer.getChildren()
                         : postsFollowers.getChildren();
-                if (!children.isEmpty()) {
-                    Node earliestChild = children.get(Math.min(2,children.size()-1));
+                if (!children.isEmpty() && children.size() > 2) {
+                    Node earliestChild = children.get(2);
                     children.remove(earliestChild);
                 }
 

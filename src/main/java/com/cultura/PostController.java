@@ -286,15 +286,11 @@ private synchronized void onCommentClicked(MouseEvent event) {
         }
 
         // Check if the reaction is already present
-        System.out.println("entering node loop");
         for (Node node : likeContainer.getChildren()) {
-            System.out.println("first node loop");
             if (node instanceof HBox) {
                 HBox existingBox = (HBox) node;
                 ImageView existingImageView = (ImageView) existingBox.getChildren().get(0);
-                System.out.println("second node loop " + existingImageView.getImage().getUrl().equals(reactionImage.getUrl()) + " " + (userReactionCount == 1));
                 if (existingImageView.getImage().getUrl().equals(reactionImage.getUrl()) && userReactionCount == 1) {
-                    System.out.println("inside if statement");
                     // Reaction is already present, update the label count
                     Label countLabel = (Label) existingBox.getChildren().get(1);
                     int currentCount = Integer.parseInt(countLabel.getText());
