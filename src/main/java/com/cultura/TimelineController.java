@@ -38,7 +38,7 @@ public class TimelineController {
     private TextField PostTextArea, search_bar;
 
     @FXML
-    private VBox postsContainer, postsFollowers;
+    private VBox postsContainer, postsFollowers, postsEverybody;
     @FXML
     private Pane userListPane;
 
